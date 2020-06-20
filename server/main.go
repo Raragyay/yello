@@ -25,10 +25,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	//signify handles
 	http.Handle("/socket.io/", server)
-
-	fs := http.FileServer(http.Dir("../client/pages"))
-	http.Handle("/", fs)
+	http.HandleFunc("/", serveIndex)
 
 	log.Println("Serving at localhost:5000...")
 	log.Fatal(http.ListenAndServe(":5000", nil))
