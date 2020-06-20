@@ -1,41 +1,35 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
+	"net/http"
+
+	socketio "github.com/googollee/go-socket.io"
 )
 
 var serverActive bool = false
 
-type player struct {
+//clientPlayer is a struct that holds all the pointers and information about the player as well as the connection. Some variables can be null depending on the state
+//the player is in. Thus, each concurrent operation is handled such that it is either the sub-operation of an operation that it knows will ensure the existence
+//of the variables it wants to use or it is said operation itself.
+type clientPlayer struct {
 	conn *net.Conn
 	name string
 }
 
 //main handles initial socket connections and calls the needed functions for each connection. It does so concurrently so that it may keep listening.
 func main() {
-	li, err := net.Listen("tcp", ":52515")
+	server, err := socketio.NewServer(nil)
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Fatal(err)
 	}
 
-	fmt.Println("Now listening on port 52515...")
+	http.Handle("/socket.io/", server)
 
-	serverActive = true
+	fs := http.FileServer(http.Dir("../client/pages"))
+	http.Handle("/", fs)
 
-	for {
-		conn, err := li.Accept()
-		if err != nil {
-			log.Fatalln(err.Error())
-		}
-		fmt.Println("New connection from " + conn.RemoteAddr().String())
-		go handleGameConnection(&conn)
-	}
-}
-
-//handleGameConnection is the first function called concurrently for a client and it calls all other needed functions as well as constructs the client object.
-func handleGameConnection(conn *net.Conn) {
-	fmt.Println("Handling connection for: " + (*conn).RemoteAddr().String())
-
+	log.Println("Serving at localhost:5000...")
+	log.Fatal(http.ListenAndServe(":5000", nil))
 }
