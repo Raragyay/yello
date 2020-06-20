@@ -28,7 +28,7 @@ func main() {
 	//signify handles
 	http.Handle("/socket.io/", server)
 	http.HandleFunc("/", serveIndex)
-	http.HandleFunc("/queue", serveQueue)
+	http.HandleFunc("/queue", serveHandleQueue)
 
 	log.Println("Serving at localhost:5000...")
 	log.Fatal(http.ListenAndServe(":5000", nil))
