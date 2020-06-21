@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"flag"
 	"log"
 	"math/rand"
@@ -12,7 +11,7 @@ import (
 	"sync"
 )
 
-type tile int
+type tile uint8
 
 type posVector struct {
 	x int
@@ -24,22 +23,15 @@ func (v posVector) toString() string {
 }
 
 const (
-// //THINGS YOU CAN BE ON TOP OF
-// blankTile  tileType = "000"
-// pelletTile tileType = "002"
-
-// //THINGS THAT MOVE
-// p1 tileType = "004"
-// p2 tileType = "010" //ghost- blinkly
-// p3 tileType = "011" //ghost- pinky
-// p4 tileType = "012" //inky
-// p5 tileType = "013" //clyde
-
-// //pelletWithP1 = "024"
-
-// wall tileType = "100"
-
-//TILE ENUM
+	// Bitwise enums
+	wall        tile = 0b10000000
+	p1          tile = 0b01000000
+	p2          tile = 0b00100000
+	p3          tile = 0b00010000
+	p4          tile = 0b00001000
+	p5          tile = 0b00000100
+	pellet      tile = 0b00000010
+	superPellet tile = 0b00000001
 )
 
 var (
@@ -47,78 +39,7 @@ var (
 	mazeFile   = flag.String("maze-file", "map.txt", "/")
 )
 
-type player struct {
-	name     string
-	row      int
-	col      int
-	startRow int
-	startCol int
-	ghost    bool
-	active   bool
-}
-
-type level struct {
-	isWall [][]bool
-	cols   int
-	rows   int
-	player player
-	ghosts []ghost
-}
-
-type ghost struct {
-	position player
-	status   GhostStatus
-}
-
-type GhostStatus string
-
-const (
-	GhostStatusNormal GhostStatus = "Normal"
-	GhostStatusBlue   GhostStatus = "Blue"
-)
-
-var players [5]player
-
-func createplayer(name string, startRow int, startCol int) {
-	if name == "pacman" {
-		players[0] = player{name, startRow, startCol, startRow, startCol, false, true} //TODO FIX
-	} else if !players[1].active {
-		players[1] = player{name, startRow, startCol, startRow, startCol, true, true}
-	} else if !players[2].active {
-		players[2] = player{name, startRow, startCol, startRow, startCol, true, true}
-	} else if !players[3].active {
-		players[3] = player{name, startRow, startCol, startRow, startCol, true, true}
-	} else if !players[4].active {
-		players[4] = player{name, startRow, startCol, startRow, startCol, true, true}
-	}
-}
-
 var ghostsStatusMx sync.RWMutex
-
-type config struct {
-	Player    string `json:"player"`
-	Ghost     string `json:"ghost"`
-	GhostBlue string `json:"ghost_blue"`
-	Wall      string `json:"wall"`
-	Dot       string `json:"dot"`
-	Death     string `json:"death"`
-	Space     string `json:"space"`
-}
-
-func loadConfig(file string) error {
-	f, err := os.Open(file)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	decoder := json.NewDecoder(f)
-	err = decoder.Decode(&configFile)
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 func loadMaze(file string) ([]string, error) {
 	f, err := os.Open(file)
@@ -133,25 +54,6 @@ func loadMaze(file string) ([]string, error) {
 		maze = append(maze, line)
 	}
 	return maze, nil
-	//TODO parse into enum
-	/*
-		for row, line := range *maze {
-			for col, char := range line {
-				switch char {
-				case "004":
-					player = player(row, col, row, col)
-				case "010":
-					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-				case "011":
-					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-				case "012":
-					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-				case "013":
-					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-				}
-			}
-		}
-	*/
 }
 
 // func readInput() (string, error) { //make so that
@@ -303,4 +205,17 @@ func loadAndParseMazeFile(mazeFileName string) ([][]string, int) {
 		}
 	}
 	return parsedMaze, rows
+}
+
+//UTILS
+func isIllegalCollision(t tile) bool {
+	return (!(uint8(t) > uint8(wall)))
+}
+
+func getPlayerID(t tile) string {
+	switch t {
+	case wall:
+
+	}
+	return ""
 }

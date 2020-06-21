@@ -18,7 +18,6 @@ const (
 type playerGameData struct { //TODO LOAD GAME DATA
 	p               *clientPlayer
 	latestDirection direction
-	mazeP           *player
 }
 
 func initializeGameServer(p1, p2 *clientPlayer) {
@@ -88,6 +87,10 @@ func checkUpdateObjectStates() {
 
 func updateObjectPosition(g *game, id string, v *posVector) {
 	writeToAllPlayers(g, "PONG GAME-ENTITY-POS "+id+"-"+v.toString())
+}
+
+func sendPelletConsumed(g *game, v *posVector) {
+	writeToAllPlayers(g, "PONG GAME-PELLET-HOM "+v.toString()) //client should get rid of pellet AND increase score for pac-man (if it is keeping track for visual purposes)
 }
 
 //func updateObjectState(g *game, o *gameObject, state objectState) {
