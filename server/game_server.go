@@ -1,5 +1,5 @@
 package main
-
+import "strconv"
 type direction string
 
 const (
@@ -15,7 +15,16 @@ type playerGameData struct { //TODO LOAD GAME DATA
 	mazeP           *player
 }
 
-func initializeGameServer(p1, p2, p3, p4, p5 *clientPlayer) {
+type posVector struct{
+x int
+y int
+}
+
+type objectState struct{
+alive bool
+}
+
+func initializeGameServer(p1, p2 *clientPlayer) {
 	gameInstance := game{
 		p1: &playerGameData{p: p1},
 		p2: &playerGameData{p: p2},
@@ -25,8 +34,8 @@ func initializeGameServer(p1, p2, p3, p4, p5 *clientPlayer) {
 		active: true,
 	}
 
-	p1.writeChanneledMessage("PONG GAME-INIT " + "P1-" + p2.name + "-" + p3.name + "-" + p4.name + "-" + p5.name) //Who needs JSON when you got -?
-	p2.writeChanneledMessage("PONG GAME-INIT " + "P2-" + p1.name + "-" + p3.name + "-" + p4.name + "-" + p5.name)
+	p1.writeChanneledMessage("PONG GAME-INIT") //Who needs JSON when you got -?
+	p2.writeChanneledMessage("PONG GAME-INIT")
 	//p3.writeChanneledMessage("PONG GAME-INIT " + "P3-" + p1.name + "-" + p2.name + "-" + p4.name + "-" + p5.name)
 	//p4.writeChanneledMessage("PONG GAME-INIT " + "P4-" + p1.name + "-" + p2.name + "-" + p3.name + "-" + p5.name)
 	//p5.writeChanneledMessage("PONG GAME-INIT " + "P5-" + p1.name + "-" + p2.name + "-" + p3.name + "-" + p4.name)
@@ -54,13 +63,13 @@ func checkUpdateObjectStates() {
 
 //TO ZE CLIENTSSSS
 
-func updateObjectPosition(g *game, o *gameObject, v *posVector) {
-	p1.writeChanneledMessage("PONG GAME-OBJECT-POS " + o.string_ID + "-" + v.toString())
+func updateObjectPosition(p1 *clientPlayer,g *game, v *posVector) {
+	p1.writeChanneledMessage("PONG GAME-OBJECT-POS " + "p1" + " " + strconv.Itoa(v.x)+"-"+strconv.Itoa(v.y))
 	//...
 }
 
-func updateObjectState(g *game, o *gameObject, state objectState) {
-	p1.writeChanneledMessage("PONG GAME-OBJECT-STATE " + o.string_ID + "-" + string(objectState))
+func updateObjectState(p1 *clientPlayer, g *game, state *objectState) {
+	p1.writeChanneledMessage("PONG GAME-OBJECT-STATE " + "hahaha")// + "-" + string(objectState))
 }
 
 //FROM ZE CLIENT

@@ -4,24 +4,26 @@ import (
 	"bufio"
 	"encoding/json"
 	"flag"
+	"log"
 	"math/rand"
 	"os"
+	"strings"
 	"sync"
 )
 
-type objectType string
+type tileType string
 
 const (
-	blankTile  objectType = "000"
-	pelletTile objectType = "002"
+	blankTile  tileType = "000"
+	pelletTile tileType = "002"
 
-	p1 objectType = "004"
-	p2 objectType = "010" //ghost- blinkly
-	p3 objectType = "011" //ghost- pinky
-	p4 objectType = "012" //inky
-	p5 objectType = "013" //clyde
+	p1 tileType = "004"
+	p2 tileType = "010" //ghost- blinkly
+	p3 tileType = "011" //ghost- pinky
+	p4 tileType = "012" //inky
+	p5 tileType = "013" //clyde
 
-	wall objectType = "100"
+	wall tileType = "100"
 )
 
 var (
@@ -37,6 +39,15 @@ type player struct {
 	startCol int
 	ghost    bool
 	active   bool
+}
+
+type level struct {
+	isWall   [][]bool
+	cols     int
+	rows     int
+	levelMap [][]tileType
+	player   player
+	ghosts   []ghost
 }
 
 type ghost struct {
@@ -59,13 +70,11 @@ func createplayer(name string, startRow int, startCol int) {
 	} else if !players[1].active {
 		players[1] = player{name, startRow, startCol, startRow, startCol, true, true}
 	} else if !players[2].active {
-		players[2] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
-	} else if players[3] == nil {
-		players[3] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
-	} else if players[4] == nil {
-		players[4] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
-	} else if players[5] == nil {
-		players[5] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
+		players[2] = player{name, startRow, startCol, startRow, startCol, true, true}
+	} else if !players[3].active {
+		players[3] = player{name, startRow, startCol, startRow, startCol, true, true}
+	} else if !players[4].active {
+		players[4] = player{name, startRow, startCol, startRow, startCol, true, true}
 	}
 }
 
@@ -89,45 +98,45 @@ func loadConfig(file string) error {
 	defer f.Close()
 
 	decoder := json.NewDecoder(f)
-	err = decoder.Decode(&cfg)
+	err = decoder.Decode(&configFile)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func loadMaze(maze *[21][25]string, g *game, file string) error {
+func loadMaze(file string) (error, []string) {
 	f, err := os.Open(file)
 	if err != nil {
-		return err
+		return err, []string{}
 	}
 	defer f.Close()
-
+	maze := make([]string, 0)
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
 		maze = append(maze, line)
 	}
-
+	return nil, maze
 	//TODO parse into enum
-
-	for row, line := range maze {
-		for col, char := range line {
-			switch char {
-			case "004":
-				player = player(row, col, row, col)
-			case "010":
-				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-			case "011":
-				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-			case "012":
-				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-			case "013":
-				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+	/*
+		for row, line := range *maze {
+			for col, char := range line {
+				switch char {
+				case "004":
+					player = player(row, col, row, col)
+				case "010":
+					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+				case "011":
+					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+				case "012":
+					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+				case "013":
+					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+				}
 			}
 		}
-	}
-	return nil
+	*/
 }
 
 // func readInput() (string, error) { //make so that
@@ -156,58 +165,58 @@ func loadMaze(maze *[21][25]string, g *game, file string) error {
 // 	}
 // 	return "", nil
 // }
-
-func makeMove(oldRow, oldCol int, dir string) (newRow, newCol int) {
-	newRow, newCol = oldRow, oldCol
-
-	switch dir {
-	case "UP":
-		newRow = newRow - 1
-		if newRow < 0 {
-			newRow = len(maze) - 1
-		}
-	case "DOWN":
-		newRow = newRow + 1
-		if newRow == len(maze)-1 {
-			newRow = 0
-		}
-	case "RIGHT":
-		newCol = newCol + 1
-		if newCol == len(maze[0]) {
-			newCol = 0
-		}
-	case "LEFT":
-		newCol = newCol - 1
-		if newCol < 0 {
-			newCol = len(maze[0]) - 1
-		}
-	}
-
-	if maze[newRow][newCol] == wall {
-		newRow = oldRow
-		newCol = oldCol
-	}
-	return
-}
-
-func movePlayer(playerindex string, dir string) {
-	player.row, player.col = makeMove(players[playerindex].player.row, players[playerindex].player.col, dir)
-	if players[playerindex].player.ghost == false {
-		removeDot := func(row, col int) {
-			maze[row] = maze[row][0:col] + " " + maze[row][col+1:]
-		}
-
-		switch maze[player.row][player.col] {
-		case '.':
-			numDots--
-			score++
-			removeDot(player.row, player.col)
-		}
-	} else {
-
-	}
-
-}
+//
+//func makeMove(oldRow, oldCol int, dir string) (newRow, newCol int) {
+//	newRow, newCol = oldRow, oldCol
+//
+//	switch dir {
+//	case "UP":
+//		newRow = newRow - 1
+//		if newRow < 0 {
+//			newRow = len(maze) - 1
+//		}
+//	case "DOWN":
+//		newRow = newRow + 1
+//		if newRow == len(maze)-1 {
+//			newRow = 0
+//		}
+//	case "RIGHT":
+//		newCol = newCol + 1
+//		if newCol == len(maze[0]) {
+//			newCol = 0
+//		}
+//	case "LEFT":
+//		newCol = newCol - 1
+//		if newCol < 0 {
+//			newCol = len(maze[0]) - 1
+//		}
+//	}
+//
+//	if maze[newRow][newCol] == wall {
+//		newRow = oldRow
+//		newCol = oldCol
+//	}
+//	return
+//}
+//
+//func movePlayer(playerindex string, dir string) {
+//	player.row, player.col = makeMove(players[playerindex].player.row, players[playerindex].player.col, dir)
+//	if players[playerindex].player.ghost == false {
+//		removeDot := func(row, col int) {
+//			maze[row] = maze[row][0:col] + " " + maze[row][col+1:]
+//		}
+//
+//		switch maze[player.row][player.col] {
+//		case '.':
+//			numDots--
+//			score++
+//			removeDot(player.row, player.col)
+//		}
+//	} else {
+//
+//	}
+//
+//}
 func drawDirection() string {
 	dir := rand.Intn(4)
 	move := map[int]string{
@@ -219,50 +228,63 @@ func drawDirection() string {
 	return move[dir]
 }
 
-// func main() {
-// 	flag.Parse()
+func main() {
+	//flag.Parse()
+	//
+	//// initialize game
+	//initialise()
+	//defer cleanup()
 
-// 	// initialize game
-// 	initialise()
-// 	defer cleanup()
+	// load resources
+	maze := loadAndParseMazeFile(*mazeFile)
+	println(len(maze))
+	//// process input (async)
+	//input := make(chan string)
+	//go func(ch chan<- string) {
+	//	for {
+	//		input, err := readInput()
+	//		if err != nil {
+	//			log.Print("error reading input:", err)
+	//			ch <- "ESC"
+	//		}
+	//		ch <- input
+	//	}
+	//}(input)
+	//
+	//// game loop
+	//for {
+	//	// process movement
+	//	select {
+	//	case inp := <-input:
+	//		if inp == "ESC" {
+	//			lives = 0
+	//		}
+	//		movePlayer(inp)
+	//		moveGhosts(inp)
+	//		// check game over
+	//		if numDots == 0 || lives <= 0 {
+	//			if lives == 0 {
+	//				fmt.Print("GAME OVER")
+	//			}
+	//			break
+	//		}
+	//	}
+	//}
+}
 
-// 	// load resources
-// 	err := loadMaze(*mazeFile)
-// 	if err != nil {
-// 		log.Println("failed to load maze:", err)
-// 		return
-// 	}
-
-// 	// process input (async)
-// 	input := make(chan string)
-// 	go func(ch chan<- string) {
-// 		for {
-// 			input, err := readInput()
-// 			if err != nil {
-// 				log.Print("error reading input:", err)
-// 				ch <- "ESC"
-// 			}
-// 			ch <- input
-// 		}
-// 	}(input)
-
-// 	// game loop
-// 	for {
-// 		// process movement
-// 		select {
-// 		case inp := <-input:
-// 			if inp == "ESC" {
-// 				lives = 0
-// 			}
-// 			movePlayer(inp)
-// 			moveGhosts(inp)
-// 			// check game over
-// 			if numDots == 0 || lives <= 0 {
-// 				if lives == 0 {
-// 					fmt.Print("GAME OVER")
-// 				}
-// 				break
-// 			}
-// 		}
-// 	}
-// }
+func loadAndParseMazeFile(mazeFileName string) [][]tileType {
+	err, rawMaze := loadMaze(mazeFileName)
+	if err != nil {
+		log.Println("failed to load maze:", err)
+		return nil
+	}
+	parsedMaze := make([][]tileType, len(rawMaze))
+	for i := 0; i < len(rawMaze); i++ {
+		split_row := strings.Split(rawMaze[i], " ")
+		parsedMaze[i] = make([]tileType, len(split_row))
+		for j := 0; j < len(split_row); j++ {
+			parsedMaze[i][j] = tileType(split_row[j])
+		}
+	}
+	return parsedMaze
+}
