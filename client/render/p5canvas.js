@@ -103,7 +103,6 @@ async function windowResized() {
 
 
 function drawLevel() {
-
     fill('#57d4ef')
     noStroke()
     for (let i = 0; i < isWall.length; i++) {
@@ -126,11 +125,13 @@ function drawLevel() {
             pellet.draw()
         }
     )
-    // console.log("drewLevel");
 }
 
 function draw() {
     clear();
+    if (!gameActive) {
+        return
+    }
     drawLevel();
     player1.update();
     player1.show();
@@ -144,7 +145,7 @@ class Pellet {
 
     draw() {
         fill("yellow")
-        circle(this.x*block_size+block_size/2, this.y*block_size+block_size/2, this.pellet_size())
+        circle(this.x * block_size + block_size / 2, this.y * block_size + block_size / 2, this.pellet_size())
     }
 
     pellet_size() {
@@ -159,36 +160,35 @@ class BigPellet extends Pellet {
 }
 
 class Player {
-  constructor() {
-    this.xblock = 10;
-    this.yblock = 2;
-    //this.xpx = this.xblock * block_size;
-    //this.ypx = this.yblock * block_size;
-    this.xspeed = 0;
-    this.yspeed = 0;
+    constructor() {
+        this.xblock = 10;
+        this.yblock = 2;
+        //this.xpx = this.xblock * block_size;
+        //this.ypx = this.yblock * block_size;
+        this.xspeed = 0;
+        this.yspeed = 0;
 
-    this.update = function () {
-      if (isWall[this.yblock + this.yspeed][this.xblock + this.xspeed]) {
-        this.xspeed = 0//0//this.x + this.xspeed*-0.1;
-        this.yspeed = 0//0//this.y + this.yspeed*-0.1;
-      }
-      else {
-        this.xblock += this.xspeed;
-        this.yblock += this.yspeed;
-        //this.xblock = Math.floor(this.xpx/block_size + block_size/2);
-        //this.yblock = Math.floor(this.ypx/block_size + block_size/2);
-        //console.log(this.xblock, this.yblock);
-        //this.xpx = this.xpx + this.xspeed*0.1;
-        //this.ypx = this.ypx + this.yspeed*0.1;
-      }
-    };
-    this.show = function () {
-      fill('#f0d465');
-      rect(this.xblock*block_size, this.yblock*block_size, block_size, block_size);
-      //rect(this.xpx, this.ypx, block_size, block_size);
-    };
-    //return this;
-  }
+        this.update = function () {
+            if (isWall[this.yblock + this.yspeed][this.xblock + this.xspeed]) {
+                this.xspeed = 0//0//this.x + this.xspeed*-0.1;
+                this.yspeed = 0//0//this.y + this.yspeed*-0.1;
+            } else {
+                this.xblock += this.xspeed;
+                this.yblock += this.yspeed;
+                //this.xblock = Math.floor(this.xpx/block_size + block_size/2);
+                //this.yblock = Math.floor(this.ypx/block_size + block_size/2);
+                //console.log(this.xblock, this.yblock);
+                //this.xpx = this.xpx + this.xspeed*0.1;
+                //this.ypx = this.ypx + this.yspeed*0.1;
+            }
+        };
+        this.show = function () {
+            fill('#f0d465');
+            rect(this.xblock * block_size, this.yblock * block_size, block_size, block_size);
+            //rect(this.xpx, this.ypx, block_size, block_size);
+        };
+        //return this;
+    }
 }
 
 function updateCommand(newCmd) {
