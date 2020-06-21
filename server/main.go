@@ -90,6 +90,7 @@ func reader(conn *websocket.Conn) {
 	var p *clientPlayer
 	defer handlepanic(p)
 	p = initializePlayer(conn)
+	fmt.Println("Player initialized: " + p.name)
 	for {
 		// read in a message
 		messageType, data, err := conn.ReadMessage()
