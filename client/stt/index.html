@@ -6,19 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Browser speech recognition</title>
     <link rel="stylesheet" href="./style.css" />
+    <script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js"></script>
   </head>
   <body>
-    <header>
-      <h1>Browser speech recognition</h1>
-    </header>
-    <main>
-      <button id="button">Start listening</button>
-      <div id="result"></div>
-      <p id="message" hidden aria-hidden="true">
-        Your browser doesn't support Speech Recognition. Sorry.
-      </p>
-    </main>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/speech-commands@0.4.0/dist/speech-commands.min.js"></script>
+    <script src="sketch.js"></script>
   </body>
 </html>

@@ -1,4 +1,3 @@
-
 // Initialize a sound classifier method with SpeechCommands18w model.
 let classifier;
 const options = { probabilityThreshold: 0.8 };
@@ -7,7 +6,10 @@ let label;
 let confidence;
 
 async function setup() {
-  classifier = await ml5.soundClassifier("SpeechCommands18w", options);
+  classifier = await ml5.soundClassifier(
+    "https://storage.googleapis.com/tm-model/RoRt49x-Z/model.json",
+    options
+  );
   // Create 'label' and 'confidence' div to hold results
 
   label = document.createElement("DIV");
@@ -20,7 +22,6 @@ async function setup() {
   // Classify the sound from microphone in real time
   classifier.classify(gotResult);
 }
-
 
 setup();
 console.log("ml5 version:", ml5.version);
