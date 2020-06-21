@@ -62,7 +62,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 func main() {
 
 	//handle
-	fs := http.FileServer(http.Dir("../client/pages"))
+	fs := http.FileServer(http.Dir("../client/render"))
 	http.Handle("/", fs)
 	http.HandleFunc("/ws", wsEndpoint)
 
@@ -162,6 +162,7 @@ func reader(conn *websocket.Conn) {
 	integratePlayerIntoTendedMass(p)
 	fmt.Println("Player initialized: " + p.name)
 	go channelsListener(p) //one thread listens within, other listens out. the one who listens within also writes the messages.
+	p.writeChanneledMessage("PONG NAME-OK")
 	for p.valid && serverActive {
 		// read in a message
 		messageType, data, err := conn.ReadMessage()

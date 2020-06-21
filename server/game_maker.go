@@ -7,6 +7,8 @@ import (
 )
 
 type game struct {
+	p1, p2, p3, p4, p5 *playerGameData
+	active             bool
 }
 
 //game_maker queues players up and puts them under a certain game_manager. It queues them up and delegates them into different games depending on whether a game is
@@ -51,22 +53,14 @@ func handleQueuedPlayer(newPlayer *clientPlayer) {
 					queuedPlayers[j-1] = queuedPlayers[j]
 				}
 				queuedPlayers = queuedPlayers[:len(queuedPlayers)-1] //discard last element that is now a duplicate
-				break
+				break                                                //TODO FIX THIS. I NEED EVERYONE FOR THIS OR AT LEAST 2 PEOPLE. QUEUED PLAYERS SLICE DOES NOT GET FIXED PROPERLY
 			}
 		}
 	}
 	if len(queuedPlayers) >= playersInEachGame {
-		//go initializeGameServer(queuedPlayers[0], queuedPlayers[1])
 
-		//remove from array
-
-		// queuedPlayers[0] = queuedPlayers[len(queuedPlayers)-1]
-		// queuedPlayers[len(queuedPlayers)-1] = nil
-		// queuedPlayers[1] = queuedPlayers[len(queuedPlayers)-2]
-		// queuedPlayers[len(queuedPlayers)-2] = nil
-		// queuedPlayers = queuedPlayers[:len(queuedPlayers)-2]
-
-		queuedPlayers = queuedPlayers[5:]
+		go initializeGameServer(queuedPlayers[0], queuedPlayers[1], queuedPlayers[2], queuedPlayers[3], queuedPlayers[4])
+		queuedPlayers = queuedPlayers[5:] //TODO SLICE LENGTH ISSUE
 
 	} else {
 		fmt.Println("player", newPlayer.name, "joined queue and the queue now has at most", len(queuedPlayers), "players.")

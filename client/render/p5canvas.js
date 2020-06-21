@@ -43,7 +43,7 @@ function loadJSON(filePath, success, error) {
             if (xhr.status === 200) {
                 if (success)
                     success(JSON.parse(xhr.responseText));
-                    console.log('successfully loaded level')
+                console.log('successfully loaded level')
             } else {
                 if (error)
                     error(xhr);
@@ -98,8 +98,13 @@ async function windowResized() {
 
 
 function drawLevel() {
+<<<<<<< HEAD
    
   fill('#57D4EF')
+=======
+
+    fill('#F8E587')
+>>>>>>> 47118e232c23f5e2f649ef56db4181031ad0b1be
     noStroke()
     for (let i = 0; i < isWall.length; i++) {
         for (let j = 0; j < isWall[0].length; j++) {
@@ -117,7 +122,7 @@ function drawLevel() {
             }
         }
     }
-   // console.log("drewLevel"); 
+   // console.log("drewLevel");
 }
 
 function draw() {
@@ -128,6 +133,7 @@ function draw() {
 }
 
 
+<<<<<<< HEAD
 class Player {
   constructor() {
     this.xblock = 10;
@@ -156,10 +162,36 @@ class Player {
     };
     //return this;
   }
+=======
+class Pacman {
+    constructor() {
+        this.x = 5;
+        this.y = 5;
+        this.xspeed = 1;
+        this.yspeed = 0;
+
+        this.update = function () {
+
+            if (isWall[this.y + this.yspeed][this.x + this.xspeed]) {
+                console.log('set to 0')
+                this.xspeed = 0;
+                this.yspeed = 0;
+            } else {
+                this.x = this.x + this.xspeed*.1;
+                this.y = this.y + this.yspeed*.1;
+            }
+        };
+        this.show = function () {
+            fill(0);
+            rect(this.x * block_size, this.y * block_size, block_size, block_size);
+        };
+        //return this;
+    }
+>>>>>>> 47118e232c23f5e2f649ef56db4181031ad0b1be
 }
 
 function updateCommand(newCmd) {
-  console.log("newcmd");
+    console.log("newcmd");
     command = newCmd;
     switch (newCmd) {
         case 'up':
@@ -178,6 +210,11 @@ function updateCommand(newCmd) {
             player1.xspeed = 1;
             player1.yspeed = 0;
             break;
+<<<<<<< HEAD
+=======
+        default:
+            break;
+>>>>>>> 47118e232c23f5e2f649ef56db4181031ad0b1be
     }
 }
 
