@@ -198,10 +198,7 @@ func reader(conn *websocket.Conn) {
 			p.writeChanneledMessage("PONG INVALID")
 			handleDisconnectPlayer(p)
 			panic("PONG INVALID")
-		}
-
-		//another number of fields message!
-		if len(fields) == 3 { //this is for directive and argument
+		} else if len(fields) == 3 { //this is for directive and argument
 
 		} else {
 			//invalid number of fields boi! GET OUTTA MY SERVER YE DEGENERATE
