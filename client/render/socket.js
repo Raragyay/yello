@@ -11,12 +11,41 @@ function sendSocketMessage(msg) {
 
 let socketOpen = false
 socket.onopen = () => {
-    console.log('CONNECTION ESTABLISHED')
+    console.log('Client: CONNECTION ESTABLISHED')
     socketOpen = true
-
-    sendSocketMessage("PONG " + "TESTER");
-    sendSocketMessage("PONG QUEUE");
 }
+
+socket.onclose = event => {
+    console.log("Socket Closed Connection: ", event);
+    sendSocketMessage("PONG CLOSE")
+    socketOpen = false;
+}
+socket.onerror = error => {
+    console.error("Socket Error: ", error);
+};
+
 socket.onmessage = (msg) => {
+    let data = msg.data;
+    if (data.startsWith("PONG QUEUE")) {
+        document.getElementById("queue").innerText = data.split(" ")[2]
+    } else if (data.startsWith("PONG GAME-INIT")) {
+        //TODO take names of other players
+        document.getElementById("mainui-play").style.display = 'none'
+        gameActive = true
+    } else if (data.startsWith("PONG GAME-UPDATE-POS")) {
+        let split_data = data.split(' ');
+        if (split_data[2] === 'p1') {
+            //VECTOR TOSTRING SYNTAX WILL HAVE TO BE GIVEN. CURRENTLY ASSUME IT IS GIVEN AS {X}-{Y}
+            let pvector = split_data[3].split('-');
+            player1.xblock = parseInt(pvector[0])
+            player1.yblock = parseInt(pvector[1])
+        }
+    }
     console.log("Server: " + msg.data);
 }
+
+document.getElementById("play").addEventListener("click", () => {
+    let name = document.getElementById("nick").value;
+    sendSocketMessage("PONG " + name)
+    sendSocketMessage("PONG QUEUE")
+})
