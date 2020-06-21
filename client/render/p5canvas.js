@@ -1,73 +1,79 @@
 //import {background, createCanvas, loadImage, windowHeight, windowWidth} from "p5/global";
 
-let levelImg;
 let pellets = [];
 let entities = [];
-
-const levelStr = "000 000 000 000 000 000 000 000 000 100 021 100 000 000 000 000 000 000 000 000 000\n" +
-    "000 100 100 100 100 100 100 100 100 100 000 100 100 100 100 100 100 100 100 100 000\n" +
-    "000 100 002 002 002 002 002 002 002 002 002 002 002 002 002 002 002 002 002 100 000\n" +
-    "000 100 003 100 002 100 002 100 100 100 002 100 100 100 002 100 002 100 003 100 000\n" +
-    "000 100 002 002 002 100 002 002 002 100 002 100 002 002 002 100 002 002 002 100 000\n" +
-    "000 100 002 100 100 100 002 100 002 100 002 100 002 100 002 100 100 100 002 100 000\n" +
-    "000 100 002 002 002 002 002 100 002 002 002 002 002 100 002 002 002 002 002 100 000\n" +
-    "000 100 002 100 002 100 100 100 100 100 002 100 100 100 100 100 002 100 002 100 000\n" +
-    "000 100 002 002 002 002 002 002 002 002 002 002 002 002 002 002 002 002 002 100 000\n" +
-    "000 100 100 100 002 100 002 100 100 100 100 100 100 100 002 100 002 100 100 100 000\n" +
-    "000 000 000 100 002 100 002 002 000 000 010 000 000 002 002 100 002 100 000 000 000\n" +
-    "100 100 100 100 002 100 100 002 100 100 001 100 100 002 100 100 002 100 100 100 100\n" +
-    "020 000 000 000 002 000 000 002 100 011 012 013 100 002 000 000 002 000 000 000 020\n" +
-    "100 100 100 100 002 100 100 002 100 100 100 100 100 002 100 100 002 100 100 100 100\n" +
-    "000 100 002 002 002 000 000 002 000 000 022 000 000 002 000 000 002 002 002 100 000\n" +
-    "000 100 002 100 002 100 100 002 100 100 100 100 100 002 100 100 002 100 002 100 000 \n" +
-    "000 100 002 002 002 100 002 002 000 000 004 000 000 002 002 100 002 002 002 100 000\n" +
-    "000 100 100 100 002 100 002 100 100 100 100 100 100 100 002 100 002 100 100 100 000 \n" +
-    "000 000 100 002 002 002 002 002 002 002 100 002 002 002 002 002 002 002 100 000 000 \n" +
-    "000 000 100 002 100 100 002 100 100 002 100 002 100 100 002 100 100 002 100 000 000\n" +
-    "100 100 100 002 002 002 002 002 100 002 100 002 100 002 002 002 002 002 100 100 100\n" +
-    "100 002 002 002 100 100 100 002 100 002 100 002 100 002 100 100 100 002 002 002 100\n" +
-    "100 003 100 002 002 002 002 002 002 002 002 002 002 002 002 002 002 002 100 003 100\n" +
-    "100 002 002 002 100 100 100 100 100 100 000 100 100 100 100 100 100 002 002 002 100\n" +
-    "100 100 100 100 100 000 000 000 000 100 021 100 000 000 000 000 100 100 100 100 100"
-
-let level = [];
+let level, isWall;
+loadJSON('./levels/level1.json', x => {
+    level = x.levelData
+    isWall = level.map(x => x.map(tile => tile === '100'))
+})
 let levelHeight, levelWidth;
 let block_size;
 
+function loadJSON(filePath, success, error) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                if (success)
+                    success(JSON.parse(xhr.responseText));
+            } else {
+                if (error)
+                    error(xhr);
+            }
+        }
+    };
+    xhr.open("GET", filePath, true);
+    xhr.send();
+}
 
 function preload() {
-    levelImg = loadImage('images/level.png')
-    level = levelStr.split('\n').map(str => str.split(' '))
-    print(level)
+    // levelImg = loadImage('images/level.png')
+    // level = levelStr.split('\n').map(str => str.split(' '))
+    // print(data)
+    // print(isWall)
 }
 
 function calc_block_size() {
     levelHeight = windowHeight / 2
-    levelWidth = windowHeight / 2 / levelImg.height * levelImg.width
-    block_size = levelHeight / 25
+    levelWidth = windowHeight / 2 / level.length * level[0].length
+    block_size = levelHeight / level.length
 }
 
 function setup() {
     calc_block_size();
-    createCanvas(levelWidth, levelHeight);
+    var canvas=createCanvas(levelWidth, levelHeight);
+    canvas.parent('sketch-div')
 }
 
 function windowResized() {
     calc_block_size();
-    createCanvas(levelWidth, levelHeight);
+    resizeCanvas(levelWidth, levelHeight);
 }
 
 
-function draw() {
+function drawLevel() {
     fill(255, 204, 0)
-    for (let i = 0; i < 25; i++) {
-        for (let j = 0; j < 21; j++) {
-            if (level[i][j] == '100') {
-                rect(j * block_size, i * block_size, block_size, block_size)
+    noStroke()
+    for (let i = 0; i < isWall.length; i++) {
+        for (let j = 0; j < isWall[0].length; j++) {
+            if (isWall[i][j]) {
+                let border_checks = []
+                border_checks[0] = (j > 0 && isWall[i][j - 1])
+                border_checks[1] = (i > 0 && isWall[i - 1][j])
+                border_checks[2] = (j < isWall[0].length - 1 && isWall[i][j + 1])
+                border_checks[3] = (i < isWall.length - 1 && isWall[i + 1][j])
+                let corner_checks = []
+                for (let k = 0; k < 4; k++) {
+                    corner_checks[k] = !((border_checks[k] || border_checks[(k + 1) % 4])) * 10
+                }
+                rect(j * block_size, i * block_size, block_size, block_size, ...corner_checks)
             }
         }
     }
+}
 
-    // background(levelImg);
-    // x++
+function draw() {
+    background(255);
+    drawLevel();
 }
