@@ -37,20 +37,14 @@ func queueSystem() {
 
 func handleQueuedPlayer(newPlayer *clientPlayer) {
 	queuedPlayers = append(queuedPlayers, newPlayer)
-	breakFlag := false //to handle player having quit while waiting and other terrible misconduct
 	if len(queuedPlayers) >= playersInEachGame {
 		//if inside here, the last player added completes the lobby. but we must check whether other players are still valid..
-		for {
-			breakFlag = false
-
-			if len(queuedPlayers) > 1 && !queuedPlayers[0].valid {
-				queuedPlayers = queuedPlayers[1:]
-				breakFlag = true
-			}
-
-			//and now other indices
-
-			if !breakFlag {
+		for i := 0; i < playersInEachGame; i++ {
+			if !queuedPlayers[i].valid {
+				for j := i + 1; j < playersInEachGame; j++ {
+					queuedPlayers[j-1] = queuedPlayers[j]
+				}
+				queuedPlayers = queuedPlayers[:len(queuedPlayers)-1] //discard last element that is now a duplicate
 				break
 			}
 		}
