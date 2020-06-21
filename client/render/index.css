@@ -1,35 +1,69 @@
 #mainui-play {
     background-color: white;
     border-radius: 10px;
-    width: 300px;
-    height: 500px;
+    width: 60vmin;
+    height: 25vmin;
     text-align: center;
+    z-index: 999;
+    margin: 0 auto;
+    position: absolute;              
+    top: 40%;
+    left: 50%;                         
+    transform: translate(-50%);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 #nick {
     position: relative;
-    margin: 10px;
-    border-radius: 4px;
+    margin: 20px;
+    border-radius: 5px;
     border-style: solid;
     border-color: #A2A2A2;
-    padding-left: 10px;
+    width: 80%;
+    height: 25%;
+    display: inline-block;
 }
 
 .btn-play {
-    width: 180px;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 20px;
-    height: 34px;
-    line-height: 1.5;
+    width: 70%;
+    font-size: 120%;
+    height: 40%;
     color: white;
-    background-color: cornflowerblue;
+    background-color: #f0d465;
     border-radius: 10px;
-    position: relative;
+    margin: 20px;
     border: 1px solid transparent;
+    display: inline-block;
+    bottom: 20%;
+    box-shadow: 0 0 8px rgba(81, 122, 234, 0.2);
+    text-shadow: 0 0 5px rgba(81, 122, 234, 0.2);
+    text-align: center;
+}
+
+.btn-play:hover {
+    background-color: #f3e956;
 }
 
 #queue {
     position: relative;
     margin: 10px;
+    display: inline-block;
+}
+
+html {
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background: linear-gradient(180deg, #6310CD 14.58%, #74E8EF 100%);
+    font-family: 'Varela Round', sans-serif;
+    text-align: center;
+}
+
+body {
+    z-index: -10;
+    color: white;
+}
+
+input, button, select, textarea, form, table {
+    font-family: inherit;
 }

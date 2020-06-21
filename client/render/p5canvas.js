@@ -87,6 +87,9 @@ async function setup() {
     // canvas.parent('sketch-div')
     player1 = new Player();
     console.log("setup");
+    
+    canvas.style.position = "relative";
+    canvas.style('z-index', "-3");
 }
 
 async function windowResized() {
@@ -121,7 +124,7 @@ function drawLevel() {
 }
 
 function draw() {
-    background('#5F4DD7');
+    clear();
     drawLevel();
     player1.update();
     player1.show();
@@ -153,7 +156,7 @@ class Player {
       }
     };
     this.show = function () {
-      fill('#F1DE6C');
+      fill('#f0d465');
       rect(this.xblock*block_size, this.yblock*block_size, block_size, block_size);
       //rect(this.xpx, this.ypx, block_size, block_size);
     };
@@ -198,9 +201,9 @@ async function setupstt() {
     // Create 'label' and 'confidence' div to hold results,, delete eventually
 
     label = document.createElement("DIV");
-    label.textContent = "label ...";
+    label.textContent = "Command:";
     confidence = document.createElement("DIV");
-    confidence.textContent = "Confidence ...";
+    confidence.textContent = "Confidence:";
 
     document.body.appendChild(label);
     document.body.appendChild(confidence);
@@ -220,7 +223,7 @@ function gotResult(error, results) {
     }
 
     let wordIn = results[0].label;
-    label.textContent = "Label: " + wordIn;
+    label.textContent = "Command: " + wordIn;
     confidence.textContent = "Confidence: " + results[0].confidence.toFixed(4);
 
     updateCommand(wordToCmd[wordIn]);
