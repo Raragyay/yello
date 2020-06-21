@@ -9,7 +9,10 @@ loadJSON('./levels/level1.json', x => {
 })
 let levelHeight, levelWidth;
 let block_size;
-let player1 = new Pacman;
+var player1;
+
+setupstt();
+setup();
 
 function loadJSON(filePath, success, error) {
     var xhr = new XMLHttpRequest();
@@ -78,8 +81,8 @@ function drawLevel() {
 function draw() {
     background(255);
     drawLevel();
-    // player1.update();
-    // player1.show();
+    player1.update();
+    player1.show();
 }
 
 
@@ -174,7 +177,7 @@ async function setupstt() {
 
 }
 
-setupstt();
+
 console.log("ml5 version:", ml5.version);
 
 // A function to run when we get any errors and the results
