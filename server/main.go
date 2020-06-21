@@ -25,10 +25,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//signify handles
-	http.Handle("/socket.io/", server)
-	http.HandleFunc("/", serveIndex)
-	http.HandleFunc("/queue", serveHandleQueue)
+	//serve statically
+	fs := http.FileServer(http.Dir("../client/pages"))
+	http.Handle("/", fs)
 
 	//signify socket connections
 	server.OnConnect("/queue", handleQueueSockets)
