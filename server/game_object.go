@@ -215,8 +215,20 @@ func isIllegalCollision(t tile) bool {
 
 func getPlayerID(t tile) string {
 	switch t {
-	case wall:
-
+	case p1:
+		return "P1"
+	case p2:
+		return "P2"
+	case p3:
+		return "P3"
+	case p4:
+		return "P4"
+	case p5:
+		return "P5"
 	}
 	return ""
+}
+
+func isPacHom(t tile) bool {
+	return pellet&p1 == t
 }
