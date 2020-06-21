@@ -30,6 +30,9 @@ func main() {
 	http.HandleFunc("/", serveIndex)
 	http.HandleFunc("/queue", serveHandleQueue)
 
+	//signify socket connections
+	server.OnConnect("/queue", handleQueueSockets)
+
 	log.Println("Serving at localhost:5000...")
 	log.Fatal(http.ListenAndServe(":5000", nil))
 }
