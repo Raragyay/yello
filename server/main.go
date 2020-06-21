@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/list"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,14 +20,15 @@ const (
 //the player is in. Thus, each concurrent operation is handled such that it is either the sub-operation of an operation that it knows will ensure the existence
 //of the variables it wants to use or it is said operation itself.
 type clientPlayer struct {
-	conn              *websocket.Conn
-	name              string
-	messageType       int
-	activeGame        *game
-	valid             bool
-	writeChannel      chan *writeRequest
-	disconnectChannel chan interface{} //an empty interface is used as no data is passed, just the existence of the signal is enough
-	m                 sync.RWMutex     //Thou shalt not both read and write from a connection from different threads. Alas, thou must nonetheless keep both threads listening- one from client and one for write requests within server.
+	conn                 *websocket.Conn
+	name                 string
+	messageType          int
+	activeGame           *game
+	valid                bool
+	writeChannel         chan *writeRequest
+	disconnectChannel    chan interface{} //an empty interface is used as no data is passed, just the existence of the signal is enough
+	m                    sync.RWMutex     //Thou shalt not both read and write from a connection from different threads. Alas, thou must nonetheless keep both threads listening- one from client and one for write requests within server.
+	tendedPlayersElement *list.Element    //its position in the connected list.
 }
 
 func corsMiddleware(next http.Handler) http.Handler {
@@ -98,6 +100,10 @@ func writeMessage(p *clientPlayer, data []byte) {
 	}
 }
 
+var tendedPlayers *list.List = list.New()
+
+var tendedPlayersMutex sync.RWMutex = sync.RWMutex{}
+
 //READER
 
 func initializePlayer(conn *websocket.Conn) *clientPlayer {
@@ -129,15 +135,22 @@ func initializePlayer(conn *websocket.Conn) *clientPlayer {
 	}
 }
 
+func integratePlayerIntoTendedMass(p *clientPlayer) {
+	tendedPlayersMutex.Lock()
+	p.tendedPlayersElement = tendedPlayers.PushBack(p)
+	tendedPlayersMutex.Unlock()
+}
+
 //reader listens to all messages from a specific client and then passes it down to everything. it is basically God, if there was different instances of God for each person.
 //It heeds our prayers so that we may gracefully play pong and marvel at the beauty of the front-end.
 func reader(conn *websocket.Conn) {
 	var p *clientPlayer
 	defer handlepanic(p)
 	p = initializePlayer(conn)
+	integratePlayerIntoTendedMass(p)
 	fmt.Println("Player initialized: " + p.name)
 	go channelsListener(p) //one thread listens within, other listens out. the one who listens within also writes the messages.
-	for {
+	for p.valid && serverActive {
 		// read in a message
 		messageType, data, err := conn.ReadMessage()
 		p.m.RLock()
@@ -213,12 +226,22 @@ func channelsListener(p *clientPlayer) {
 			removeClient(p)
 			conn.Close()
 			p.m.Unlock()
+			p = nil
 			return
 		}
 	}
 }
 
 func removeClient(p *clientPlayer) {
+	p.valid = false
+
+	tendedPlayersMutex.Lock()
+	tendedPlayers.Remove(p.tendedPlayersElement)
+	tendedPlayersMutex.Unlock()
+
+	if p.activeGame != nil {
+		//oh noes must deal with other players. quitting scum!
+	}
 
 }
 
