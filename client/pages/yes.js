@@ -1,20 +1,38 @@
 let socket = new WebSocket("ws://185.163.47.170:5000/ws");
 console.log("Attempting Connection...");
 
+socketOpen = false;
+
 socket.onopen = () => {
     console.log("Successfully Connected");
-    socket.send("Hi From the Client!")
+    socketOpen = true;
 };
         
 socket.onclose = event => {
     console.log("Socket Closed Connection: ", event);
- 	socket.send("Client Closed!")
+ 	socket.send("PONG CLOSE")
+ 	socketOpen = false;
+};
+
+socket.onerror = error => {
+    console.error("Socket Error: ", error);
 };
 
 socket.onmessage = (msg) =>{
-    console.log(msg);
+    console.log("Server: " + msg);
 }
 
-socket.onerror = error => {
-    console.log("Socket Error: ", error);
-};
+
+function sendSocketMessage(msg){
+	if(!socketOpen){
+		console.error("tried to write to socket despite socket being closed");
+		return;
+	}
+	socket.send(msg);
+	console.log("SENT: " + msg);
+}
+
+onSubmitName(){
+	name = document.getElementById("onQueueButton").textContent();
+	sendSocketMessage("PONG " + name);
+}
