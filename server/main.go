@@ -18,7 +18,7 @@ const (
 
 //2 fields are for direct messages. 3 fields are for direct + variable pass
 var handledClientCalls = map[clientCallSpecification]clientMessageHandle{
-	clientCallSpecification{}: queuePlayer,
+	clientCallSpecification{isDirectMessage: true, msgBase: "PONG QUEUE"}: queuePlayer,
 }
 
 type clientCallSpecification struct {
@@ -179,7 +179,19 @@ func reader(conn *websocket.Conn) {
 
 		if flag == ok {
 			//2 fields message!
-
+			dataString := string(data)
+			specification := clientCallSpecification{
+				isDirectMessage: true,
+				msgBase:         dataString,
+			}
+			if val, ok := handledClientCalls[specification]; ok {
+				val(&playerRequest{message: dataString, p: p}, "")
+			} else {
+				p.m.RUnlock()
+				p.writeChanneledMessage("PONG INVALID")
+				handleDisconnectPlayer(p)
+				panic("PONG INVALID DIRECT MESSAGE: " + string(data))
+			}
 		} else if flag == notPONG || fields == nil {
 			//GET OUTTA HERE YOU NO PLAY PONG YOU MONSTER YOU GET OUT AAA
 			p.m.RUnlock()
@@ -189,7 +201,7 @@ func reader(conn *websocket.Conn) {
 		}
 
 		//another number of fields message!
-		if len(fields) == 3 { //can add more cases like this with more else if or can switch to switch if it becomes inefficient
+		if len(fields) == 3 { //this is for directive and argument
 
 		} else {
 			//invalid number of fields boi! GET OUTTA MY SERVER YE DEGENERATE
@@ -221,7 +233,6 @@ func handleDisconnectPlayer(p *clientPlayer) {
 
 //channelsListener ensures that the channels of a player is always functional, but only if the player is valid.
 func channelsListener(p *clientPlayer) {
-	conn := *p.conn
 	for p.valid && serverActive {
 		if !p.valid {
 			return
@@ -237,7 +248,7 @@ func channelsListener(p *clientPlayer) {
 			fmt.Println("disconnecting through channel: " + p.name)
 			writeMessage(p, []byte("PONG CLOSE"))
 			removeClient(p)
-			conn.Close()
+			p.conn.Close()
 			p.m.Unlock()
 			p = nil
 			return
