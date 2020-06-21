@@ -3,13 +3,11 @@
 <head>
 	<title>YELLO</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-	<script src="yes.js"></script>
+	<script type="module" src="/yes.js"></script>
 </head>
 <body>
-<form action="/queue" method="get">
-  <label for="name">Enter player name:</label>
-  <input type="text" id="name" name="name">
-  <input type="submit" value="Queue up!">
-</form>
+  	<label for="name">Enter player name:</label>
+  	<input type="text" id="nameText" name="name">
+	<button id = "onQueueButton">Queue Up!</button>
 </body>
 </html>
