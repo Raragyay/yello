@@ -7,21 +7,35 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 )
 
 type tileType string
 
+type posVector struct {
+	x int
+	y int
+}
+
+func (v posVector) toString() string {
+	return strconv.Itoa(v.x) + "-" + strconv.Itoa(v.y)
+}
+
 const (
+	//THINGS YOU CAN BE ON TOP OF
 	blankTile  tileType = "000"
 	pelletTile tileType = "002"
 
+	//THINGS THAT MOVE
 	p1 tileType = "004"
 	p2 tileType = "010" //ghost- blinkly
 	p3 tileType = "011" //ghost- pinky
 	p4 tileType = "012" //inky
 	p5 tileType = "013" //clyde
+
+	//pelletWithP1 = "024"
 
 	wall tileType = "100"
 )
@@ -105,10 +119,10 @@ func loadConfig(file string) error {
 	return nil
 }
 
-func loadMaze(file string) (error, []string) {
+func loadMaze(file string) ([]string, error) {
 	f, err := os.Open(file)
 	if err != nil {
-		return err, []string{}
+		return []string{}, err
 	}
 	defer f.Close()
 	maze := make([]string, 0)
@@ -117,7 +131,7 @@ func loadMaze(file string) (error, []string) {
 		line := scanner.Text()
 		maze = append(maze, line)
 	}
-	return nil, maze
+	return maze, nil
 	//TODO parse into enum
 	/*
 		for row, line := range *maze {
@@ -228,7 +242,7 @@ func drawDirection() string {
 	return move[dir]
 }
 
-func main() {
+func yes() {
 	//flag.Parse()
 	//
 	//// initialize game
@@ -236,8 +250,8 @@ func main() {
 	//defer cleanup()
 
 	// load resources
-	maze := loadAndParseMazeFile(*mazeFile)
-	println(len(maze))
+	// maze := loadAndParseMazeFile(*mazeFile)
+	// println(len(maze))
 	//// process input (async)
 	//input := make(chan string)
 	//go func(ch chan<- string) {
@@ -272,19 +286,20 @@ func main() {
 	//}
 }
 
-func loadAndParseMazeFile(mazeFileName string) [][]tileType {
-	err, rawMaze := loadMaze(mazeFileName)
+func loadAndParseMazeFile(mazeFileName string) ([][]tileType, int) {
+	rawMaze, err := loadMaze(mazeFileName)
 	if err != nil {
 		log.Println("failed to load maze:", err)
-		return nil
+		return nil, 0
 	}
 	parsedMaze := make([][]tileType, len(rawMaze))
-	for i := 0; i < len(rawMaze); i++ {
-		split_row := strings.Split(rawMaze[i], " ")
-		parsedMaze[i] = make([]tileType, len(split_row))
-		for j := 0; j < len(split_row); j++ {
-			parsedMaze[i][j] = tileType(split_row[j])
+	rows := len(rawMaze)
+	for i := 0; i < rows; i++ {
+		splitRow := strings.Split(rawMaze[i], " ")
+		parsedMaze[i] = make([]tileType, len(splitRow))
+		for j := 0; j < len(splitRow); j++ {
+			parsedMaze[i][j] = tileType(splitRow[j])
 		}
 	}
-	return parsedMaze
+	return parsedMaze, rows
 }
