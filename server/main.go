@@ -61,7 +61,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func wsEndpoint(w http.ResponseWriter, r *http.Request) {
-	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true } //upgrade for all clients for now. Maybe Docker in less hacky application
 	// upgrade this connection to a WebSocket
 	// connection
 	ws, err := upgrader.Upgrade(w, r, nil)
