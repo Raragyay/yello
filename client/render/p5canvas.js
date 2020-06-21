@@ -12,7 +12,6 @@ let block_size;
 var player1;
 
 setupstt();
-setup();
 
 function loadJSON(filePath, success, error) {
     var xhr = new XMLHttpRequest();
