@@ -18,7 +18,8 @@ const (
 
 //2 fields are for direct messages. 3 fields are for direct + variable pass
 var handledClientCalls = map[clientCallSpecification]clientMessageHandle{
-	clientCallSpecification{isDirectMessage: true, msgBase: "PONG QUEUE"}: queuePlayer,
+	clientCallSpecification{isDirectMessage: true, msgBase: "PONG QUEUE"}:      queuePlayer,
+	clientCallSpecification{isDirectMessage: true, msgBase: "PONG UPDATE-DIR"}: playerUpdateDesiredDirection,
 }
 
 type clientCallSpecification struct {
