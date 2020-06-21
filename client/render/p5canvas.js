@@ -1,7 +1,7 @@
 //import {background, createCanvas, loadImage, windowHeight, windowWidth} from "p5/global";
 // Initialize a sound classifier method with SpeechCommands18w model.
 let classifier;
-const options = {probabilityThreshold: 0.87};
+const options = {probabilityThreshold: 0.7};
 // Two variables to hold the label and confidence of the result
 let label;
 let confidence;
@@ -98,13 +98,8 @@ async function windowResized() {
 
 
 function drawLevel() {
-<<<<<<< HEAD
    
   fill('#57D4EF')
-=======
-
-    fill('#F8E587')
->>>>>>> 47118e232c23f5e2f649ef56db4181031ad0b1be
     noStroke()
     for (let i = 0; i < isWall.length; i++) {
         for (let j = 0; j < isWall[0].length; j++) {
@@ -133,61 +128,37 @@ function draw() {
 }
 
 
-<<<<<<< HEAD
 class Player {
   constructor() {
     this.xblock = 10;
     this.yblock = 2;
-    this.xpx = this.xblock * block_size;
-    this.ypx = this.yblock * block_size;
+    //this.xpx = this.xblock * block_size;
+    //this.ypx = this.yblock * block_size;
     this.xspeed = 0;
     this.yspeed = 0;
 
     this.update = function () {
       if (isWall[this.yblock + this.yspeed][this.xblock + this.xspeed]) {
-        this.xspeed *= -1//0//this.x + this.xspeed*-0.1;
-        this.yspeed *= -1//0//this.y + this.yspeed*-0.1;
+        this.xspeed = 0//0//this.x + this.xspeed*-0.1;
+        this.yspeed = 0//0//this.y + this.yspeed*-0.1;
       }
       else {
-        this.xblock = Math.floor(this.xpx/block_size + block_size/2);
-        this.yblock = Math.floor(this.ypx/block_size + block_size/2);
-        console.log(this.xblock, this.yblock);
-        this.xpx = this.xpx + this.xspeed*0.1;
-        this.ypx = this.ypx + this.yspeed*0.1;
+        this.xblock += this.xspeed;
+        this.yblock += this.yspeed;
+        //this.xblock = Math.floor(this.xpx/block_size + block_size/2);
+        //this.yblock = Math.floor(this.ypx/block_size + block_size/2);
+        //console.log(this.xblock, this.yblock);
+        //this.xpx = this.xpx + this.xspeed*0.1;
+        //this.ypx = this.ypx + this.yspeed*0.1;
       }
     };
     this.show = function () {
       fill('#F1DE6C');
-      rect(this.xpx, this.ypx, block_size, block_size);
+      rect(this.xblock*block_size, this.yblock*block_size, block_size, block_size);
+      //rect(this.xpx, this.ypx, block_size, block_size);
     };
     //return this;
   }
-=======
-class Pacman {
-    constructor() {
-        this.x = 5;
-        this.y = 5;
-        this.xspeed = 1;
-        this.yspeed = 0;
-
-        this.update = function () {
-
-            if (isWall[this.y + this.yspeed][this.x + this.xspeed]) {
-                console.log('set to 0')
-                this.xspeed = 0;
-                this.yspeed = 0;
-            } else {
-                this.x = this.x + this.xspeed*.1;
-                this.y = this.y + this.yspeed*.1;
-            }
-        };
-        this.show = function () {
-            fill(0);
-            rect(this.x * block_size, this.y * block_size, block_size, block_size);
-        };
-        //return this;
-    }
->>>>>>> 47118e232c23f5e2f649ef56db4181031ad0b1be
 }
 
 function updateCommand(newCmd) {
@@ -210,11 +181,8 @@ function updateCommand(newCmd) {
             player1.xspeed = 1;
             player1.yspeed = 0;
             break;
-<<<<<<< HEAD
-=======
         default:
             break;
->>>>>>> 47118e232c23f5e2f649ef56db4181031ad0b1be
     }
 }
 
@@ -259,7 +227,7 @@ function gotResult(error, results) {
 }
 
 
-function updateDicts(newLeft, newUp, newDown, newRight) {
+function updateDicts(newLeft, newUp, newRight, newDown) {
     cmdToWord.left = newLeft;
     cmdToWord.up = newUp;
     cmdToWord.right = newRight;
