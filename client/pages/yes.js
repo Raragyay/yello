@@ -32,7 +32,7 @@ function sendSocketMessage(msg){
 	console.log("SENT: " + msg);
 }
 
-onSubmitName(){
+function onSubmitName(){
 	name = document.getElementById("onQueueButton").textContent();
 	sendSocketMessage("PONG " + name);
 }
