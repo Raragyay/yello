@@ -21,7 +21,7 @@ type clientPlayer struct {
 	conn        *websocket.Conn
 	name        string
 	messageType int
-	activegame  *game
+	activeGame  *game
 }
 
 func corsMiddleware(next http.Handler) http.Handler {
@@ -90,7 +90,7 @@ func writeMessage(p *clientPlayer, data []byte) {
 	}
 }
 
-//reader listens to all messages from a specific client
+//reader listens to all messages from a specific client and then passes it down to everything. it is basically God, if there was different instances of God for each person.
 func reader(conn *websocket.Conn) {
 	var p *clientPlayer
 	defer handlepanic(p)
