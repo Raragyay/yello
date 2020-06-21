@@ -1,4 +1,28 @@
 //import {background, createCanvas, loadImage, windowHeight, windowWidth} from "p5/global";
+// Initialize a sound classifier method with SpeechCommands18w model.
+let classifier;
+const options = {probabilityThreshold: 0.8};
+// Two variables to hold the label and confidence of the result
+let label;
+let confidence;
+
+let command;
+
+let wordToCmd = {};
+/*{
+  red: 'left',
+  yellow: 'up',
+  green: 'right',
+  blue: 'down'
+};*/
+
+let cmdToWord = {
+    left: 'red',
+    up: 'yellow',
+    right: 'green',
+    down: 'blue'
+}
+
 
 let pellets = [];
 let entities = [];
@@ -128,29 +152,7 @@ function updateCommand(newCmd) {
     }
 }
 
-// Initialize a sound classifier method with SpeechCommands18w model.
-let classifier;
-const options = {probabilityThreshold: 0.8};
-// Two variables to hold the label and confidence of the result
-let label;
-let confidence;
 
-let command;
-
-let wordToCmd = {};
-/*{
-  red: 'left',
-  yellow: 'up',
-  green: 'right',
-  blue: 'down'
-};*/
-
-let cmdToWord = {
-    left: 'red',
-    up: 'yellow',
-    right: 'green',
-    down: 'blue'
-}
 
 
 async function setupstt() {
