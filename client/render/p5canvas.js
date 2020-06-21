@@ -42,7 +42,7 @@ function loadJSON(filePath, success, error) {
             if (xhr.status === 200) {
                 if (success)
                     success(JSON.parse(xhr.responseText));
-                    console.log('successfully loaded level')
+                console.log('successfully loaded level')
             } else {
                 if (error)
                     error(xhr);
@@ -95,8 +95,8 @@ async function windowResized() {
 
 
 function drawLevel() {
-   
-  fill('#F8E587')
+
+    fill('#F8E587')
     noStroke()
     for (let i = 0; i < isWall.length; i++) {
         for (let j = 0; j < isWall[0].length; j++) {
@@ -114,7 +114,7 @@ function drawLevel() {
             }
         }
     }
-   // console.log("drewLevel"); 
+   // console.log("drewLevel");
 }
 
 function draw() {
@@ -126,33 +126,33 @@ function draw() {
 
 
 class Pacman {
-  constructor() {
-    this.x = 5;
-    this.y = 5;
-    this.xspeed = 1;
-    this.yspeed = 0;
+    constructor() {
+        this.x = 5;
+        this.y = 5;
+        this.xspeed = 1;
+        this.yspeed = 0;
 
-    this.update = function () {
+        this.update = function () {
 
-      /*if (isWall[this.x + this.xspeed][this.y + this.yspeed]) {
-        this.xspeed = this.x + this.xspeed*-0.1;
-        this.yspeed = this.y + this.yspeed*-0.1;
-      }
-      else {*/
-        this.x = this.x + this.xspeed*0.1;
-        this.y = this.y + this.yspeed*0.1;
-      //}
-    };
-    this.show = function () {
-      fill(0);
-      rect(this.x*block_size, this.y*block_size, block_size, block_size);
-    };
-    //return this;
-  }
+            if (isWall[this.y + this.yspeed][this.x + this.xspeed]) {
+                console.log('set to 0')
+                this.xspeed = 0;
+                this.yspeed = 0;
+            } else {
+                this.x = this.x + this.xspeed*.1;
+                this.y = this.y + this.yspeed*.1;
+            }
+        };
+        this.show = function () {
+            fill(0);
+            rect(this.x * block_size, this.y * block_size, block_size, block_size);
+        };
+        //return this;
+    }
 }
 
 function updateCommand(newCmd) {
-  console.log("newcmd");
+    console.log("newcmd");
     command = newCmd;
     switch (newCmd) {
         case 'up':
@@ -166,9 +166,13 @@ function updateCommand(newCmd) {
         case 'left':
             player1.xspeed = -1;
             player1.yspeed = 0;
+            break;
         case 'right':
             player1.xspeed = 1;
             player1.yspeed = 0;
+            break;
+        default:
+            break;
     }
 }
 
