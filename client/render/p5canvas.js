@@ -98,11 +98,10 @@ function Pacman() {
             this.x = this.x + this.xspeed;
             this.y = this.y + this.yspeed;
         }
-
-        this.show = function () {
-            fill(0);
-            rect(this.x, this.y, 100, 100);
-        }
+    }
+    this.show = function () {
+        fill(0);
+        rect(this.x, this.y, 100, 100);
     }
     return this;
 }
