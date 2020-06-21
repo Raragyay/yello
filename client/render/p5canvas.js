@@ -5,8 +5,8 @@ const options = {probabilityThreshold: 0.8};
 // Two variables to hold the label and confidence of the result
 let label;
 let confidence;
-
 let command;
+let player1;
 
 let wordToCmd = {};
 /*{
@@ -33,7 +33,6 @@ loadJSON('./levels/level1.json', x => {
 })
 let levelHeight, levelWidth;
 let block_size;
-var player1;
 
 
 function loadJSON(filePath, success, error) {
@@ -43,6 +42,7 @@ function loadJSON(filePath, success, error) {
             if (xhr.status === 200) {
                 if (success)
                     success(JSON.parse(xhr.responseText));
+                    console.log('success')
             } else {
                 if (error)
                     error(xhr);
@@ -61,27 +61,33 @@ function preload() {
 }
 
 function calc_block_size() {
+    console.log("calcblocksize");
+    console.log(level);
     levelHeight = windowHeight / 2
     levelWidth = windowHeight / 2 / level.length * level[0].length
     block_size = levelHeight / level.length
 }
 
 function setup() {
+  
     calc_block_size();
     var canvas = createCanvas(levelWidth, levelHeight);
+    console.log("createdCanvas");
     // canvas.parent('sketch-div')
-    player1 = Pacman();
-    console.log("scream");
+    player1 = new Pacman();
+    console.log("setup");
 }
 
 function windowResized() {
     calc_block_size();
     resizeCanvas(levelWidth, levelHeight);
+    console.log("alksjdlakjds");
 }
 
 
 function drawLevel() {
-    fill(255, 204, 0)
+  console.log("drewLevel");  
+  fill(255, 204, 0)
     noStroke()
     for (let i = 0; i < isWall.length; i++) {
         for (let j = 0; j < isWall[0].length; j++) {
@@ -109,7 +115,8 @@ function draw() {
 }
 
 
-function Pacman() {
+class Pacman {
+  constructor() {
     this.x = 0;
     this.y = 0;
     this.xspeed = 1;
@@ -117,22 +124,25 @@ function Pacman() {
 
     this.update = function () {
 
-        if (isWall[this.x + this.xspeed][this.y + this.yspeed]) {
-            this.xspeed = 0;
-            this.yspeed = 0;
-        } else {
-            this.x = this.x + this.xspeed;
-            this.y = this.y + this.yspeed;
-        }
-    }
+      if (isWall[this.x + this.xspeed][this.y + this.yspeed]) {
+        this.xspeed = 0;
+        this.yspeed = 0;
+      }
+      else {
+        this.x = this.x + this.xspeed;
+        this.y = this.y + this.yspeed;
+      }
+    };
     this.show = function () {
-        fill(0);
-        rect(this.x, this.y, 100, 100);
-    }
-    return this;
+      fill(0);
+      rect(this.x, this.y, 100, 100);
+    };
+    //return this;
+  }
 }
 
 function updateCommand(newCmd) {
+  console.log("newcmd");
     command = newCmd;
     switch (newCmd) {
         case 'up':
@@ -178,7 +188,7 @@ async function setupstt() {
 }
 
 
-console.log("ml5 version:", ml5.version);
+console.log("ml5 versijlaflaon:", ml5.version);
 
 // A function to run when we get any errors and the results
 function gotResult(error, results) {
