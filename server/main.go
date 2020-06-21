@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -15,8 +14,9 @@ var serverActive bool = false
 //the player is in. Thus, each concurrent operation is handled such that it is either the sub-operation of an operation that it knows will ensure the existence
 //of the variables it wants to use or it is said operation itself.
 type clientPlayer struct {
-	conn *net.Conn
-	name string
+	conn        *websocket.Conn
+	name        string
+	messageType int
 }
 
 func corsMiddleware(next http.Handler) http.Handler {
@@ -74,10 +74,19 @@ func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 	reader(ws)
 }
 
+func writeMessage(p *clientPlayer, data []byte) {
+	if err := p.conn.WriteMessage(p.messageType, data); err != nil {
+		log.Println(err)
+		return
+	}
+}
+
 // define a reader which will listen for
 // new messages being sent to our WebSocket
 // endpoint
 func reader(conn *websocket.Conn) {
+	defer handlepanic()
+	initializePlayer(conn)
 	for {
 		// read in a message
 		messageType, p, err := conn.ReadMessage()
@@ -93,5 +102,31 @@ func reader(conn *websocket.Conn) {
 			return
 		}
 
+	}
+}
+
+func initializePlayer(conn *websocket.Conn) *clientPlayer {
+	// read in a message
+	messageType, data, err := conn.ReadMessage()
+	if err != nil {
+		panic(err)
+	}
+
+	fields, flag := parseUtilsAndSignal(string(data), 2) //one for PONG one for name expected.
+
+	if flag != ok {
+		//FILTHY INVALID PROTOCOLS. GET OUTTA HERE!
+		conn.WriteMessage(messageType, []byte("PONG INVALID"))
+		conn.Close()
+		panic("INVALID WITH FLAG: " + parseFlagToString(flag))
+	}
+
+	// print out that message for clarity
+	fmt.Println(string(data))
+
+	return &clientPlayer{
+		conn:        conn,
+		messageType: messageType,
+		name:        fields[1],
 	}
 }
