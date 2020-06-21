@@ -4,6 +4,9 @@ import (
 	"bufio"
 	"encoding/json"
 	"flag"
+	"fmt"
+	"log"
+	"math/rand"
 	"os"
 	"sync"
 )
@@ -93,39 +96,38 @@ func loadConfig(file string) error {
 	return nil
 }
 
-func loadMaze(maze *[] string, g *game, file string) error {
+func loadMaze(file string) (error, []string) {
 	f, err := os.Open(file)
 	if err != nil {
-		return err
+		return err, []string{}
 	}
 	defer f.Close()
-
+	maze := make([]string, 0)
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
-		*maze = append(*maze, line)
+		maze = append(maze, line)
 	}
-
+	return nil, maze
 	//TODO parse into enum
-    /*
-	for row, line := range *maze {
-		for col, char := range line {
-			switch char {
-			case "004":
-				player = player(row, col, row, col)
-			case "010":
-				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-			case "011":
-				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-			case "012":
-				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-			case "013":
-				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+	/*
+		for row, line := range *maze {
+			for col, char := range line {
+				switch char {
+				case "004":
+					player = player(row, col, row, col)
+				case "010":
+					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+				case "011":
+					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+				case "012":
+					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+				case "013":
+					ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+				}
 			}
 		}
-	}
 	*/
-	return nil
 }
 
 // func readInput() (string, error) { //make so that
@@ -154,58 +156,58 @@ func loadMaze(maze *[] string, g *game, file string) error {
 // 	}
 // 	return "", nil
 // }
-/*
-func makeMove(oldRow, oldCol int, dir string) (newRow, newCol int) {
-	newRow, newCol = oldRow, oldCol
-
-	switch dir {
-	case "UP":
-		newRow = newRow - 1
-		if newRow < 0 {
-			newRow = len(maze) - 1
-		}
-	case "DOWN":
-		newRow = newRow + 1
-		if newRow == len(maze)-1 {
-			newRow = 0
-		}
-	case "RIGHT":
-		newCol = newCol + 1
-		if newCol == len(maze[0]) {
-			newCol = 0
-		}
-	case "LEFT":
-		newCol = newCol - 1
-		if newCol < 0 {
-			newCol = len(maze[0]) - 1
-		}
-	}
-
-	if maze[newRow][newCol] == wall {
-		newRow = oldRow
-		newCol = oldCol
-	}
-	return
-}
-
-func movePlayer(playerindex string, dir string) {
-	player.row, player.col = makeMove(players[playerindex].player.row, players[playerindex].player.col, dir)
-	if players[playerindex].player.ghost == false {
-		removeDot := func(row, col int) {
-			maze[row] = maze[row][0:col] + " " + maze[row][col+1:]
-		}
-
-		switch maze[player.row][player.col] {
-		case '.':
-			numDots--
-			score++
-			removeDot(player.row, player.col)
-		}
-	} else {
-
-	}
-
-}
+//
+//func makeMove(oldRow, oldCol int, dir string) (newRow, newCol int) {
+//	newRow, newCol = oldRow, oldCol
+//
+//	switch dir {
+//	case "UP":
+//		newRow = newRow - 1
+//		if newRow < 0 {
+//			newRow = len(maze) - 1
+//		}
+//	case "DOWN":
+//		newRow = newRow + 1
+//		if newRow == len(maze)-1 {
+//			newRow = 0
+//		}
+//	case "RIGHT":
+//		newCol = newCol + 1
+//		if newCol == len(maze[0]) {
+//			newCol = 0
+//		}
+//	case "LEFT":
+//		newCol = newCol - 1
+//		if newCol < 0 {
+//			newCol = len(maze[0]) - 1
+//		}
+//	}
+//
+//	if maze[newRow][newCol] == wall {
+//		newRow = oldRow
+//		newCol = oldCol
+//	}
+//	return
+//}
+//
+//func movePlayer(playerindex string, dir string) {
+//	player.row, player.col = makeMove(players[playerindex].player.row, players[playerindex].player.col, dir)
+//	if players[playerindex].player.ghost == false {
+//		removeDot := func(row, col int) {
+//			maze[row] = maze[row][0:col] + " " + maze[row][col+1:]
+//		}
+//
+//		switch maze[player.row][player.col] {
+//		case '.':
+//			numDots--
+//			score++
+//			removeDot(player.row, player.col)
+//		}
+//	} else {
+//
+//	}
+//
+//}
 func drawDirection() string {
 	dir := rand.Intn(4)
 	move := map[int]string{
@@ -217,51 +219,62 @@ func drawDirection() string {
 	return move[dir]
 }
 
-// func main() {
-// 	flag.Parse()
+func main() {
+	//flag.Parse()
+	//
+	//// initialize game
+	//initialise()
+	//defer cleanup()
 
-// 	// initialize game
-// 	initialise()
-// 	defer cleanup()
-
-// 	// load resources
-// 	err := loadMaze(*mazeFile)
-// 	if err != nil {
-// 		log.Println("failed to load maze:", err)
-// 		return
-// 	}
-
-// 	// process input (async)
-// 	input := make(chan string)
-// 	go func(ch chan<- string) {
-// 		for {
-// 			input, err := readInput()
-// 			if err != nil {
-// 				log.Print("error reading input:", err)
-// 				ch <- "ESC"
-// 			}
-// 			ch <- input
-// 		}
-// 	}(input)
-
-// 	// game loop
-// 	for {
-// 		// process movement
-// 		select {
-// 		case inp := <-input:
-// 			if inp == "ESC" {
-// 				lives = 0
-// 			}
-// 			movePlayer(inp)
-// 			moveGhosts(inp)
-// 			// check game over
-// 			if numDots == 0 || lives <= 0 {
-// 				if lives == 0 {
-// 					fmt.Print("GAME OVER")
-// 				}
-// 				break
-// 			}
-// 		}
-// 	}
-// }
-*/
+	// load resources
+	err, resultMaze := loadMaze(*mazeFile)
+	if err != nil {
+		log.Println("failed to load maze:", err)
+		return
+	}
+	for i := 0; i < len(resultMaze); i++ {
+		fmt.Println(resultMaze[i])
+		fmt.Println("===")
+	}
+	fmt.Println(len(resultMaze))
+	//for i := 0; i < len(resultMaze); i++ {
+	//	for j := 0; j < len(resultMaze[i]); j++ {
+	//		fmt.Printf("%s ", resultMaze[i][j])
+	//	}
+	//	fmt.Println()
+	//}
+	//fmt.Println(resultMaze)
+	//
+	//// process input (async)
+	//input := make(chan string)
+	//go func(ch chan<- string) {
+	//	for {
+	//		input, err := readInput()
+	//		if err != nil {
+	//			log.Print("error reading input:", err)
+	//			ch <- "ESC"
+	//		}
+	//		ch <- input
+	//	}
+	//}(input)
+	//
+	//// game loop
+	//for {
+	//	// process movement
+	//	select {
+	//	case inp := <-input:
+	//		if inp == "ESC" {
+	//			lives = 0
+	//		}
+	//		movePlayer(inp)
+	//		moveGhosts(inp)
+	//		// check game over
+	//		if numDots == 0 || lives <= 0 {
+	//			if lives == 0 {
+	//				fmt.Print("GAME OVER")
+	//			}
+	//			break
+	//		}
+	//	}
+	//}
+}
