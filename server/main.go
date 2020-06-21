@@ -42,8 +42,8 @@ func main() {
 
 	//serve
 	http.Handle("/socket.io/", server)
-	http.HandleFunc("/", serveIndex)
-	http.HandleFunc("/queue", serveHandleQueue)
+	fs := http.FileServer(http.Dir("../client/pages"))
+	http.Handle("/", fs)
 
 	//signify socket connections
 	server.OnConnect("/queue", handleQueueSockets)
