@@ -60,22 +60,30 @@ function preload() {
     // print(isWall)
 }
 
-function calc_block_size() {
+async function calc_block_size() {
+    while (level === undefined) {
+        await new Promise(resolve => {
+            setTimeout(function () {
+                resolve();
+            }, 1000)
+        })
+    }
+    console.log("Oh hey its loaded now")
     levelHeight = windowHeight / 2
     levelWidth = windowHeight / 2 / level.length * level[0].length
     block_size = levelHeight / level.length
 }
 
-function setup() {
-    calc_block_size();
+async function setup() {
+    await calc_block_size();
     var canvas = createCanvas(levelWidth, levelHeight);
     // canvas.parent('sketch-div')
     player1 = Pacman();
     console.log("scream");
 }
 
-function windowResized() {
-    calc_block_size();
+async function windowResized() {
+    await calc_block_size();
     resizeCanvas(levelWidth, levelHeight);
 }
 
@@ -151,8 +159,6 @@ function updateCommand(newCmd) {
             player1.yspeed = 0;
     }
 }
-
-
 
 
 async function setupstt() {
