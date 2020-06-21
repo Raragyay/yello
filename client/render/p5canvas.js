@@ -60,11 +60,6 @@ function preload() {
     // print(isWall)
 }
 
-<<<<<<< HEAD
-function calc_block_size() {
-    console.log("calcblocksize");
-    console.log(level);
-=======
 async function calc_block_size() {
     while (level === undefined) {
         await new Promise(resolve => {
@@ -74,20 +69,13 @@ async function calc_block_size() {
         })
     }
     console.log("Oh hey its loaded now")
->>>>>>> 44d22d5f1a19158739bb0f937817765fc5350b2c
     levelHeight = windowHeight / 2
     levelWidth = windowHeight / 2 / level.length * level[0].length
     block_size = levelHeight / level.length
 }
 
-<<<<<<< HEAD
-function setup() {
-  
-    calc_block_size();
-=======
 async function setup() {
     await calc_block_size();
->>>>>>> 44d22d5f1a19158739bb0f937817765fc5350b2c
     var canvas = createCanvas(levelWidth, levelHeight);
     console.log("createdCanvas");
     // canvas.parent('sketch-div')
@@ -134,8 +122,8 @@ function draw() {
 
 class Pacman {
   constructor() {
-    this.x = 0;
-    this.y = 0;
+    this.x = 5;
+    this.y = 5;
     this.xspeed = 1;
     this.yspeed = 0;
 
@@ -152,7 +140,7 @@ class Pacman {
     };
     this.show = function () {
       fill(0);
-      rect(this.x, this.y, 100, 100);
+      rect(this.x*block_size, this.y*block_size, block_size, block_size);
     };
     //return this;
   }
