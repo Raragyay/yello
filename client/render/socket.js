@@ -24,6 +24,30 @@ socket.onerror = error => {
     console.error("Socket Error: ", error);
 };
 
+function load_level(levelData) {
+    level = []
+    pellets = []
+    let split_level_data = levelData.split('-')
+    let cols = parseInt(split_level_data[0])
+    let rows = parseInt(split_level_data[1])
+    let idx = 2
+    for (let i = 0; i < rows; i++) {
+        let row_data = []
+        for (let j = 0; j < cols; j++) {
+            row_data.push(split_level_data[idx])
+            if (split_level_data[idx] === '002') {
+                pellets.push(new Pellet(j, i))
+            } else if (split_level_data[idx] === '003') {
+                pellets.push(new Pellet(j, i))
+            }
+            idx++
+        }
+        level.push(row_data)
+    }
+    isWall = level.map(x => x.map(tile => tile === '100'))
+    calc_block_size()
+}
+
 socket.onmessage = (msg) => {
     let data = msg.data;
     if (data.startsWith("PONG QUEUE")) {
@@ -32,6 +56,8 @@ socket.onmessage = (msg) => {
         //TODO take names of other players
         document.getElementById("mainui-play").style.display = 'none'
         gameActive = true
+    } else if (data.startsWith("PONG SET-LEVEL")) {
+        load_level(data.split(' ')[2])
     } else if (data.startsWith("PONG GAME-UPDATE-POS")) {
         let split_data = data.split(' ');
         if (split_data[2] === 'p1') {
@@ -40,6 +66,13 @@ socket.onmessage = (msg) => {
             player1.xblock = parseInt(pvector[0])
             player1.yblock = parseInt(pvector[1])
         }
+    } else if (data.startsWith("PONG SET-TILE")) {
+        let split_data = data.split(' ');
+        let pvector = split_data[2].split('-');
+        let x = parseInt(pvector[0])
+        let y = parseInt(pvector[1])
+        level[x][y] = split_data[3]
+        isWall[x][y] = level[x][y] === "100"
     }
     console.log("Server: " + msg.data);
 }

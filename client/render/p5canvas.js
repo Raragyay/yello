@@ -28,7 +28,7 @@ let cmdToWord = {
 let pellets = [];
 let entities = [];
 let level, isWall;
-/*loadJSON('./levels/level1.json', x => {
+/*loadTXT('./levels/level1.txt', x => {
     level = x.levelData
     isWall = level.map(x => x.map(tile => tile === '100'))
 })*/
@@ -36,13 +36,13 @@ let levelHeight, levelWidth;
 let block_size;
 
 
-function loadJSON(filePath, success, error) {
+function loadTXT(filePath, success, error) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 if (success)
-                    success(JSON.parse(xhr.responseText));
+                    success(xhr.responseText);
                 console.log('successfully loaded level')
             } else {
                 if (error)
@@ -57,11 +57,7 @@ function loadJSON(filePath, success, error) {
 function preload() {
     // levelImg = loadImage('images/level.png')
     // level = levelStr.split('\n').map(str => str.split(' '))
-    loadJSON('./levels/level1.json', x => {
-        level = x.levelData
-        isWall = level.map(x => x.map(tile => tile === '100'))
-        console.log(isWall);
-    })
+    loadTXT('./levels/level1.txt', load_level)
 }
 
 async function calc_block_size() {
@@ -83,15 +79,9 @@ async function setup() {
     await calc_block_size();
     canvas = createCanvas(levelWidth, levelHeight);
     canvas.center();
-    console.log("createdCanvas");
-    // canvas.parent('sketch-div')
     player1 = new Player();
-    console.log("setup");
     canvas.style.position = "relative";
     canvas.style('z-index', "-3");
-    for (let i = 0; i < 21; i++) {
-        pellets.push(new Pellet(i, 2))
-    }
 }
 
 async function windowResized() {
