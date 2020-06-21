@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"flag"
 	"log"
 	"math/rand"
@@ -24,15 +23,15 @@ func (v posVector) toString() string {
 }
 
 const (
-// Bitwise enums
-wall tile = 0b10000000
-p1 tile = 0b01000000
-p2 tile = 0b00100000
-p3 tile = 0b00010000
-p4 tile = 0b00001000
-p5 tile = 0b00000100
-pellet tile = 0b00000010
-super-pellet tile = 0b00000001
+	// Bitwise enums
+	wall        tile = 0b10000000
+	p1          tile = 0b01000000
+	p2          tile = 0b00100000
+	p3          tile = 0b00010000
+	p4          tile = 0b00001000
+	p5          tile = 0b00000100
+	pellet      tile = 0b00000010
+	superPellet tile = 0b00000001
 )
 
 var (
@@ -55,7 +54,6 @@ func loadMaze(file string) ([]string, error) {
 		maze = append(maze, line)
 	}
 	return maze, nil
-	//TODO parse into enum
 }
 
 // func readInput() (string, error) { //make so that
