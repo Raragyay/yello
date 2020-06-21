@@ -40,9 +40,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//serve statically
-	fs := http.FileServer(http.Dir("../client/pages"))
-	http.Handle("/", corsMiddleware(fs))
+	//serve
+	http.Handle("/socket.io/", server)
+	http.HandleFunc("/", serveIndex)
+	http.HandleFunc("/queue", serveHandleQueue)
 
 	//signify socket connections
 	server.OnConnect("/queue", handleQueueSockets)
