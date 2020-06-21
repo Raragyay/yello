@@ -35,6 +35,6 @@ function sendSocketMessage(msg){
 document.getElementById("onQueueButton").addEventListener("click", onSubmitName);
 
 function onSubmitName(){
-	var name = document.getElementById("nameText").textContent;
+	var name = document.getElementById("nameText").value;
 	sendSocketMessage("PONG " + name);
 }
