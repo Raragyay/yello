@@ -18,6 +18,21 @@ type clientPlayer struct {
 	name string
 }
 
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		allowHeaders := "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization"
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8100")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, PUT, PATCH, GET, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Headers", allowHeaders)
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 //main handles initial socket connections and calls the needed functions for each connection. It does so concurrently so that it may keep listening.
 func main() {
 	server, err := socketio.NewServer(nil)
@@ -27,7 +42,7 @@ func main() {
 
 	//serve statically
 	fs := http.FileServer(http.Dir("../client/pages"))
-	http.Handle("/", fs)
+	http.Handle("/", corsMiddleware(fs))
 
 	//signify socket connections
 	server.OnConnect("/queue", handleQueueSockets)

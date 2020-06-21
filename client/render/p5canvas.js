@@ -44,7 +44,7 @@ function calc_block_size() {
 function setup() {
     calc_block_size();
     var canvas=createCanvas(levelWidth, levelHeight);
-    canvas.parent('sketch-div')
+    // canvas.parent('sketch-div')
     player1 = new Pacman();
 }
 
@@ -78,8 +78,8 @@ function drawLevel() {
 function draw() {
     background(255);
     drawLevel();
-    player1.update();
-    player1.show();
+    // player1.update();
+    // player1.show();
 }
 
 
@@ -90,7 +90,7 @@ function Pacman(){
     this.yspeed = 0;
 
     this.update = function() {
-      
+
       if (isWall[this.x + this.xspeed][this.y + this.yspeed]){
         this.xspeed = 0;
         this.yspeed = 0;
@@ -99,7 +99,7 @@ function Pacman(){
         this.x = this.x + this.xspeed;
         this.y = this.y + this.yspeed;
       }
-  
+
     this.show = function() {
       fill(0);
       rect(this.x, this.y, 100, 100);
@@ -152,12 +152,12 @@ let cmdToWord = {
 }
 
 
-async function setup() {
+async function setupstt() {
   classifier = await ml5.soundClassifier(
     "https://storage.googleapis.com/tm-model/RoRt49x-Z/model.json",
     options
   );
-  
+
   updateDicts('red', 'yellow', 'green', 'blue');
 
   // Create 'label' and 'confidence' div to hold results,, delete eventually
@@ -174,7 +174,7 @@ async function setup() {
 
 }
 
-setup();
+setupstt();
 console.log("ml5 version:", ml5.version);
 
 // A function to run when we get any errors and the results
