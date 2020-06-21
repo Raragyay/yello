@@ -4,12 +4,24 @@ import (
 	"bufio"
 	"encoding/json"
 	"flag"
-	"fmt"
-	"log"
 	"math/rand"
 	"os"
 	"sync"
-	"time"
+)
+
+type objectType string
+
+const (
+	blankTile  objectType = "000"
+	pelletTile objectType = "002"
+
+	p1 objectType = "004"
+	p2 objectType = "010" //ghost- blinkly
+	p3 objectType = "011" //ghost- pinky
+	p4 objectType = "012" //inky
+	p5 objectType = "013" //clyde
+
+	wall objectType = "100"
 )
 
 var (
@@ -18,12 +30,13 @@ var (
 )
 
 type player struct {
-	name	 string
+	name     string
 	row      int
 	col      int
 	startRow int
 	startCol int
 	ghost    bool
+	active   bool
 }
 
 type ghost struct {
@@ -40,24 +53,19 @@ const (
 
 var players [5]player
 
-func createplayer(name string){
-	if name == "pacman"{
-		players[0] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,false)
-	}
-	else if players[1] == nil{
-		players[1] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
-	}
-	else if players[2] == nil{
-		players[2] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
-	}
-	else if players[3] == nil{
-		players[3] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
-	}
-	else if players[4] == nil{
-		players[4] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
-	}
-	else if players[5] == nil{
-		players[5] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
+func createplayer(name string, startRow int, startCol int) {
+	if name == "pacman" {
+		players[0] = player{name, startRow, startCol, startRow, startCol, false, true} //TODO FIX
+	} else if !players[1].active {
+		players[1] = player{name, startRow, startCol, startRow, startCol, true, true}
+	} else if !players[2].active {
+		players[2] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
+	} else if players[3] == nil {
+		players[3] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
+	} else if players[4] == nil {
+		players[4] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
+	} else if players[5] == nil {
+		players[5] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
 	}
 }
 
@@ -88,7 +96,7 @@ func loadConfig(file string) error {
 	return nil
 }
 
-func loadMaze(file string) error {
+func loadMaze(maze *[21][25]string, g *game, file string) error {
 	f, err := os.Open(file)
 	if err != nil {
 		return err
@@ -101,53 +109,53 @@ func loadMaze(file string) error {
 		maze = append(maze, line)
 	}
 
+	//TODO parse into enum
+
 	for row, line := range maze {
 		for col, char := range line {
 			switch char {
-			case '004':
-				player = player{row, col, row, col}
-			case '010':
+			case "004":
+				player = player(row, col, row, col)
+			case "010":
 				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-			case '011':
+			case "011":
 				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-			case '012':
+			case "012":
 				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-			case '013':
+			case "013":
 				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-			case '002':
-				numDots++
 			}
 		}
 	}
 	return nil
 }
 
-func readInput() (string, error) {
-	buffer := make([]byte, 100)
+// func readInput() (string, error) { //make so that
+// 	buffer := make([]byte, 100)
 
-	cnt, err := //WHATEVER THE SERVER SENDS (UP DOWN LEFT RIGHT)
-	if err != nil {
-		return "", err
-	}
+// 	cnt, err := //WHATEVER THE SERVER SENDS (UP DOWN LEFT RIGHT)
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-	if cnt == 1 && buffer[0] == 0x1b {
-		return "ESC", nil
-	} else if cnt >= 3 {
-		if buffer[0] == 0x1b && buffer[1] == '[' {
-			switch buffer[2] {
-			case 'A':
-				return "UP", nil
-			case 'B':
-				return "DOWN", nil
-			case 'C':
-				return "RIGHT", nil
-			case 'D':
-				return "LEFT", nil
-			}
-		}
-	}
-	return "", nil
-}
+// 	if cnt == 1 && buffer[0] == 0x1b {
+// 		return "ESC", nil
+// 	} else if cnt >= 3 {
+// 		if buffer[0] == 0x1b && buffer[1] == '[' {
+// 			switch buffer[2] {
+// 			case 'A':
+// 				return "UP", nil
+// 			case 'B':
+// 				return "DOWN", nil
+// 			case 'C':
+// 				return "RIGHT", nil
+// 			case 'D':
+// 				return "LEFT", nil
+// 			}
+// 		}
+// 	}
+// 	return "", nil
+// }
 
 func makeMove(oldRow, oldCol int, dir string) (newRow, newCol int) {
 	newRow, newCol = oldRow, oldCol
@@ -175,7 +183,7 @@ func makeMove(oldRow, oldCol int, dir string) (newRow, newCol int) {
 		}
 	}
 
-	if maze[newRow][newCol] == '#' {
+	if maze[newRow][newCol] == wall {
 		newRow = oldRow
 		newCol = oldCol
 	}
@@ -184,7 +192,7 @@ func makeMove(oldRow, oldCol int, dir string) (newRow, newCol int) {
 
 func movePlayer(playerindex string, dir string) {
 	player.row, player.col = makeMove(players[playerindex].player.row, players[playerindex].player.col, dir)
-	if players[playerindex].player.ghost == false{
+	if players[playerindex].player.ghost == false {
 		removeDot := func(row, col int) {
 			maze[row] = maze[row][0:col] + " " + maze[row][col+1:]
 		}
@@ -194,11 +202,12 @@ func movePlayer(playerindex string, dir string) {
 			numDots--
 			score++
 			removeDot(player.row, player.col)
+		}
+	} else {
+
 	}
-	}
-	else{
-		
-	}
+
+}
 func drawDirection() string {
 	dir := rand.Intn(4)
 	move := map[int]string{
@@ -210,50 +219,50 @@ func drawDirection() string {
 	return move[dir]
 }
 
-func main() {
-	flag.Parse()
+// func main() {
+// 	flag.Parse()
 
-	// initialize game
-	initialise()
-	defer cleanup()
+// 	// initialize game
+// 	initialise()
+// 	defer cleanup()
 
-	// load resources
-	err := loadMaze(*mazeFile)
-	if err != nil {
-		log.Println("failed to load maze:", err)
-		return
-	}
+// 	// load resources
+// 	err := loadMaze(*mazeFile)
+// 	if err != nil {
+// 		log.Println("failed to load maze:", err)
+// 		return
+// 	}
 
-	// process input (async)
-	input := make(chan string)
-	go func(ch chan<- string) {
-		for {
-			input, err := readInput()
-			if err != nil {
-				log.Print("error reading input:", err)
-				ch <- "ESC"
-			}
-			ch <- input
-		}
-	}(input)
+// 	// process input (async)
+// 	input := make(chan string)
+// 	go func(ch chan<- string) {
+// 		for {
+// 			input, err := readInput()
+// 			if err != nil {
+// 				log.Print("error reading input:", err)
+// 				ch <- "ESC"
+// 			}
+// 			ch <- input
+// 		}
+// 	}(input)
 
-	// game loop
-	for {
-		// process movement
-		select {
-		case inp := <-input:
-			if inp == "ESC" {
-				lives = 0
-			}
-			movePlayer(inp)
-			moveGhosts(inp)
-			// check game over
-			if numDots == 0 || lives <= 0 {
-				if lives == 0 {
-					fmt.Print("GAME OVER")
-				}
-				break
-			}
-		}
-	}
-}
+// 	// game loop
+// 	for {
+// 		// process movement
+// 		select {
+// 		case inp := <-input:
+// 			if inp == "ESC" {
+// 				lives = 0
+// 			}
+// 			movePlayer(inp)
+// 			moveGhosts(inp)
+// 			// check game over
+// 			if numDots == 0 || lives <= 0 {
+// 				if lives == 0 {
+// 					fmt.Print("GAME OVER")
+// 				}
+// 				break
+// 			}
+// 		}
+// 	}
+// }

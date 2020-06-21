@@ -25,15 +25,27 @@ socket.onerror = error => {
 };
 
 socket.onmessage = (msg) => {
-    var data = msg.data
+    let data = msg.data;
     if (data.startsWith("PONG QUEUE")) {
         document.getElementById("queue").innerText = data.split(" ")[2]
+    } else if (data.startsWith("PONG GAME-INIT")) {
+        //TODO take names of other players
+        document.getElementById("mainui-play").style.display = 'none'
+        gameActive = true
+    } else if (data.startsWith("PONG GAME-UPDATE-POS")) {
+        let split_data = data.split(' ');
+        if (split_data[2] === 'p1') {
+            //VECTOR TOSTRING SYNTAX WILL HAVE TO BE GIVEN. CURRENTLY ASSUME IT IS GIVEN AS {X}-{Y}
+            let pvector = split_data[3].split('-');
+            player1.xblock = parseInt(pvector[0])
+            player1.yblock = parseInt(pvector[1])
+        }
     }
     console.log("Server: " + msg.data);
 }
 
 document.getElementById("play").addEventListener("click", () => {
-    var name = document.getElementById("nick").value;
+    let name = document.getElementById("nick").value;
     sendSocketMessage("PONG " + name)
     sendSocketMessage("PONG QUEUE")
 })

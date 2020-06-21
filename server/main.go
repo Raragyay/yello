@@ -18,7 +18,8 @@ const (
 
 //2 fields are for direct messages. 3 fields are for direct + variable pass
 var handledClientCalls = map[clientCallSpecification]clientMessageHandle{
-	clientCallSpecification{isDirectMessage: true, msgBase: "PONG QUEUE"}: queuePlayer,
+	clientCallSpecification{isDirectMessage: true, msgBase: "PONG QUEUE"}:      queuePlayer,
+	clientCallSpecification{isDirectMessage: true, msgBase: "PONG UPDATE-DIR"}: playerUpdateDesiredDirection,
 }
 
 type clientCallSpecification struct {
@@ -183,7 +184,7 @@ func reader(conn *websocket.Conn) {
 
 		if flag == ok {
 			//2 fields message!
-			dataString := string(data)
+			dataString := fields[0] + " " + fields[1]
 			specification := clientCallSpecification{
 				isDirectMessage: true,
 				msgBase:         dataString,
@@ -203,7 +204,19 @@ func reader(conn *websocket.Conn) {
 			handleDisconnectPlayer(p)
 			panic("PONG INVALID")
 		} else if len(fields) == 3 { //this is for directive and argument
-
+			dataString := fields[0] + " " + fields[1]
+			specification := clientCallSpecification{
+				isDirectMessage: false,
+				msgBase:         dataString,
+			}
+			if val, ok := handledClientCalls[specification]; ok {
+				val(&playerRequest{message: dataString, p: p}, fields[2])
+			} else {
+				p.m.RUnlock()
+				p.writeChanneledMessage("PONG INVALID")
+				handleDisconnectPlayer(p)
+				panic("PONG INVALID DIRECT MESSAGE: " + string(data))
+			}
 		} else {
 			//invalid number of fields boi! GET OUTTA MY SERVER YE DEGENERATE
 			p.m.RUnlock()

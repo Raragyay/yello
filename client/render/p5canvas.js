@@ -8,7 +8,7 @@ let confidence;
 let command;
 let player1;
 let canvas;
-
+let gameActive = false;
 let wordToCmd = {};
 /*{
   red: 'left',
@@ -58,10 +58,10 @@ function preload() {
     // levelImg = loadImage('images/level.png')
     // level = levelStr.split('\n').map(str => str.split(' '))
     loadJSON('./levels/level1.json', x => {
-      level = x.levelData
-      isWall = level.map(x => x.map(tile => tile === '100'))
-      console.log(isWall);
-  })
+        level = x.levelData
+        isWall = level.map(x => x.map(tile => tile === '100'))
+        console.log(isWall);
+    })
 }
 
 async function calc_block_size() {
@@ -87,9 +87,15 @@ async function setup() {
     // canvas.parent('sketch-div')
     player1 = new Player();
     console.log("setup");
+<<<<<<< HEAD
     
     canvas.style.position = "relative";
     canvas.style('z-index', "-3");
+=======
+    for (let i = 0; i < 21; i++) {
+        pellets.push(new Pellet(i, 2))
+    }
+>>>>>>> b05f4b5ca8d99bec8931b5d538adbe170eb46890
 }
 
 async function windowResized() {
@@ -102,7 +108,7 @@ async function windowResized() {
 
 function drawLevel() {
 
-  fill('#57D4EF')
+    fill('#57d4ef')
     noStroke()
     for (let i = 0; i < isWall.length; i++) {
         for (let j = 0; j < isWall[0].length; j++) {
@@ -120,7 +126,11 @@ function drawLevel() {
             }
         }
     }
-   // console.log("drewLevel");
+    pellets.forEach(pellet => {
+            pellet.draw()
+        }
+    )
+    // console.log("drewLevel");
 }
 
 function draw() {
@@ -130,8 +140,30 @@ function draw() {
     player1.show();
 }
 
+class Pellet {
+    constructor(x_, y_) {
+        this.x = x_
+        this.y = y_
+    }
+
+    draw() {
+        fill("yellow")
+        circle(this.x*block_size+block_size/2, this.y*block_size+block_size/2, this.pellet_size())
+    }
+
+    pellet_size() {
+        return block_size / 4
+    }
+}
+
+class BigPellet extends Pellet {
+    pellet_size() {
+        return block_size / 2
+    }
+}
 
 class Player {
+<<<<<<< HEAD
   constructor() {
     this.xblock = 10;
     this.yblock = 2;
@@ -162,27 +194,65 @@ class Player {
     };
     //return this;
   }
+=======
+    constructor() {
+        this.xblock = 10;
+        this.yblock = 2;
+        //this.xpx = this.xblock * block_size;
+        //this.ypx = this.yblock * block_size;
+        this.xspeed = 0;
+        this.yspeed = 0;
+
+        this.update = function () {
+            if (isWall[this.yblock + this.yspeed][this.xblock + this.xspeed]) {
+                this.xspeed = 0//0//this.x + this.xspeed*-0.1;
+                this.yspeed = 0//0//this.y + this.yspeed*-0.1;
+            } else {
+                this.xblock += this.xspeed;
+                this.yblock += this.yspeed;
+                //this.xblock = Math.floor(this.xpx/block_size + block_size/2);
+                //this.yblock = Math.floor(this.ypx/block_size + block_size/2);
+                //console.log(this.xblock, this.yblock);
+                //this.xpx = this.xpx + this.xspeed*0.1;
+                //this.ypx = this.ypx + this.yspeed*0.1;
+            }
+        };
+        this.show = function () {
+            fill('#F1DE6C');
+            rect(this.xblock * block_size, this.yblock * block_size, block_size, block_size);
+            //rect(this.xpx, this.ypx, block_size, block_size);
+        };
+        //return this;
+    }
+>>>>>>> b05f4b5ca8d99bec8931b5d538adbe170eb46890
 }
 
 function updateCommand(newCmd) {
     console.log("newcmd");
+    if (!gameActive) {
+        return
+    }
     command = newCmd;
     switch (newCmd) {
         case 'up':
             player1.xspeed = 0;
             player1.yspeed = -1;
+            sendSocketMessage("PONG UPDATE-DIR U")
             break;
         case 'down':
             player1.xspeed = 0;
             player1.yspeed = 1;
+            sendSocketMessage("PONG UPDATE-DIR D")
             break;
         case 'left':
             player1.xspeed = -1;
             player1.yspeed = 0;
+            sendSocketMessage("PONG UPDATE-DIR L")
             break;
         case 'right':
             player1.xspeed = 1;
             player1.yspeed = 0;
+            sendSocketMessage("PONG UPDATE-DIR R")
             break;
         default:
             break;
@@ -252,22 +322,18 @@ document.onkeydown = checkKey;
 function checkKey(e) {
 
     e = e || window.event;
-
     if (e.keyCode == '38') {
         // up arrow
         updateCommand('up');
-    }
-    else if (e.keyCode == '40') {
+    } else if (e.keyCode == '40') {
         // down arrow
         updateCommand('down');
-    }
-    else if (e.keyCode == '37') {
-       // left arrow
-       updateCommand('left');
-    }
-    else if (e.keyCode == '39') {
-       // right arrow
-       updateCommand('right');
+    } else if (e.keyCode == '37') {
+        // left arrow
+        updateCommand('left');
+    } else if (e.keyCode == '39') {
+        // right arrow
+        updateCommand('right');
     }
 
 }
