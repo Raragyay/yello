@@ -39,3 +39,15 @@ func handlepanic() {
 		fmt.Println("RECOVER", a)
 	}
 }
+
+func parseFlagToString(pflag parseFlag) string {
+	switch pflag {
+	case ok:
+		return "ok"
+	case notPONG:
+		return "notPONG"
+	case invalidParamsCount:
+		return "invalidParamsCount"
+	}
+	return ""
+}
