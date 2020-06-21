@@ -5,12 +5,33 @@ const options = { probabilityThreshold: 0.8 };
 let label;
 let confidence;
 
+export let direction;
+export let wordToCmd = {};
+
+/*{
+  red: 'left',
+  yellow: 'up',
+  green: 'right',
+  blue: 'down'
+};*/
+
+export let cmdToWord = {
+  left: 'red',
+  up: 'yellow',
+  right: 'green',
+  down: 'blue'
+}
+
+
 async function setup() {
   classifier = await ml5.soundClassifier(
     "https://storage.googleapis.com/tm-model/RoRt49x-Z/model.json",
     options
   );
-  // Create 'label' and 'confidence' div to hold results
+  
+  updateMaps('red', 'yellow', 'green', 'blue');
+
+  // Create 'label' and 'confidence' div to hold results,, delete eventually
 
   label = document.createElement("DIV");
   label.textContent = "label ...";
@@ -21,6 +42,7 @@ async function setup() {
   document.body.appendChild(confidence);
   // Classify the sound from microphone in real time
   classifier.classify(gotResult);
+
 }
 
 setup();
@@ -28,13 +50,32 @@ console.log("ml5 version:", ml5.version);
 
 // A function to run when we get any errors and the results
 function gotResult(error, results) {
-  // Display error in the console
+  // for debug
   if (error) {
     console.error(error);
   }
-  // The results are in an array ordered by confidence.
-  console.log(results);
-  // Show the first label and confidence
-  label.textContent = "Label: " + results[0].label;
+
+  let wordIn = results[0].label;
+  label.textContent = "Label: " + wordIn;
   confidence.textContent = "Confidence: " + results[0].confidence.toFixed(4);
+
+  return getCommand(wordIn);
+  
+}
+
+function getCommand()
+
+
+function updateMaps(newLeft, newUp, newDown, newRight){
+  cmdToWord.left = newLeft;
+  cmdToWord.up = newUp;
+  cmdToWord.right = newRight;
+  cmdToWord.down = newDown;
+
+  //update reverse map
+  for(var key in cmdToWord) {
+    if(cmdToWord.hasOwnProperty(key)){
+      wordToCmd[cmdToWord[key]] = key;
+    }
+  }
 }

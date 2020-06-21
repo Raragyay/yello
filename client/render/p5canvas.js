@@ -1,3 +1,4 @@
+export {isWall};
 //import {background, createCanvas, loadImage, windowHeight, windowWidth} from "p5/global";
 
 let pellets = [];
@@ -76,4 +77,8 @@ function drawLevel() {
 function draw() {
     background(255);
     drawLevel();
+}
+
+function isWall(x, y){
+    return isWall[y][x];
 }
