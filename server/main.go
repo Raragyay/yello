@@ -38,7 +38,8 @@ func corsMiddleware(next http.Handler) http.Handler {
 func main() {
 
 	//handle
-	http.HandleFunc("/", serveIndex)
+	fs := http.FileServer(http.Dir("../client/pages"))
+	http.Handle("/", fs)
 	http.HandleFunc("/ws", wsEndpoint)
 
 	//server
@@ -55,9 +56,6 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func serveIndex(w http.ResponseWriter, req *http.Request) {
-	http.ServeFile(w, req, "../client/pages/index.html")
-}
 func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	// upgrade this connection to a WebSocket
