@@ -105,10 +105,10 @@ func loadConfig(file string) error {
 	return nil
 }
 
-func loadMaze(file string) (error, []string) {
+func loadMaze(file string) ([]string, error) {
 	f, err := os.Open(file)
 	if err != nil {
-		return err, []string{}
+		return []string{}, err
 	}
 	defer f.Close()
 	maze := make([]string, 0)
@@ -117,7 +117,7 @@ func loadMaze(file string) (error, []string) {
 		line := scanner.Text()
 		maze = append(maze, line)
 	}
-	return nil, maze
+	return maze, nil
 	//TODO parse into enum
 	/*
 		for row, line := range *maze {
@@ -228,7 +228,7 @@ func drawDirection() string {
 	return move[dir]
 }
 
-func main() {
+func yes() {
 	//flag.Parse()
 	//
 	//// initialize game
