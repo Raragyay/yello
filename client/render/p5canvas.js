@@ -1,12 +1,13 @@
 //import {background, createCanvas, loadImage, windowHeight, windowWidth} from "p5/global";
 // Initialize a sound classifier method with SpeechCommands18w model.
 let classifier;
-const options = {probabilityThreshold: 0.75};
+const options = {probabilityThreshold: 0.7};
 // Two variables to hold the label and confidence of the result
 let label;
 let confidence;
 let command;
 let player1;
+let canvas;
 
 let wordToCmd = {};
 /*{
@@ -59,6 +60,7 @@ function preload() {
     loadJSON('./levels/level1.json', x => {
       level = x.levelData
       isWall = level.map(x => x.map(tile => tile === '100'))
+      console.log(isWall);
   })
 }
 
@@ -79,24 +81,25 @@ async function calc_block_size() {
 
 async function setup() {
     await calc_block_size();
-    var canvas = createCanvas(levelWidth, levelHeight);
+    canvas = createCanvas(levelWidth, levelHeight);
     canvas.center();
     console.log("createdCanvas");
     // canvas.parent('sketch-div')
-    player1 = new Pacman();
+    player1 = new Player();
     console.log("setup");
 }
 
 async function windowResized() {
     await calc_block_size();
     resizeCanvas(levelWidth, levelHeight);
+    canvas.center();
     //console.log("windowresized");
 }
 
 
 function drawLevel() {
-
-    fill('#F8E587')
+   
+  fill('#57D4EF')
     noStroke()
     for (let i = 0; i < isWall.length; i++) {
         for (let j = 0; j < isWall[0].length; j++) {
@@ -118,37 +121,44 @@ function drawLevel() {
 }
 
 function draw() {
-    background('#4C48CA');
+    background('#5F4DD7');
     drawLevel();
     player1.update();
     player1.show();
 }
 
 
-class Pacman {
-    constructor() {
-        this.x = 5;
-        this.y = 5;
-        this.xspeed = 1;
-        this.yspeed = 0;
+class Player {
+  constructor() {
+    this.xblock = 10;
+    this.yblock = 2;
+    //this.xpx = this.xblock * block_size;
+    //this.ypx = this.yblock * block_size;
+    this.xspeed = 0;
+    this.yspeed = 0;
 
-        this.update = function () {
-
-            if (isWall[this.y + this.yspeed][this.x + this.xspeed]) {
-                console.log('set to 0')
-                this.xspeed = 0;
-                this.yspeed = 0;
-            } else {
-                this.x = this.x + this.xspeed*.1;
-                this.y = this.y + this.yspeed*.1;
-            }
-        };
-        this.show = function () {
-            fill(0);
-            rect(this.x * block_size, this.y * block_size, block_size, block_size);
-        };
-        //return this;
-    }
+    this.update = function () {
+      if (isWall[this.yblock + this.yspeed][this.xblock + this.xspeed]) {
+        this.xspeed = 0//0//this.x + this.xspeed*-0.1;
+        this.yspeed = 0//0//this.y + this.yspeed*-0.1;
+      }
+      else {
+        this.xblock += this.xspeed;
+        this.yblock += this.yspeed;
+        //this.xblock = Math.floor(this.xpx/block_size + block_size/2);
+        //this.yblock = Math.floor(this.ypx/block_size + block_size/2);
+        //console.log(this.xblock, this.yblock);
+        //this.xpx = this.xpx + this.xspeed*0.1;
+        //this.ypx = this.ypx + this.yspeed*0.1;
+      }
+    };
+    this.show = function () {
+      fill('#F1DE6C');
+      rect(this.xblock*block_size, this.yblock*block_size, block_size, block_size);
+      //rect(this.xpx, this.ypx, block_size, block_size);
+    };
+    //return this;
+  }
 }
 
 function updateCommand(newCmd) {
@@ -217,7 +227,7 @@ function gotResult(error, results) {
 }
 
 
-function updateDicts(newLeft, newUp, newDown, newRight) {
+function updateDicts(newLeft, newUp, newRight, newDown) {
     cmdToWord.left = newLeft;
     cmdToWord.up = newUp;
     cmdToWord.right = newRight;
@@ -232,3 +242,29 @@ function updateDicts(newLeft, newUp, newDown, newRight) {
 }
 
 setupstt();
+
+//arrow key navigation 
+document.onkeydown = checkKey;
+
+function checkKey(e) {
+
+    e = e || window.event;
+
+    if (e.keyCode == '38') {
+        // up arrow
+        updateCommand('up');
+    }
+    else if (e.keyCode == '40') {
+        // down arrow
+        updateCommand('down');
+    }
+    else if (e.keyCode == '37') {
+       // left arrow
+       updateCommand('left');
+    }
+    else if (e.keyCode == '39') {
+       // right arrow
+       updateCommand('right');
+    }
+
+}
