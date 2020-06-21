@@ -304,3 +304,14 @@ func loadAndParseMazeFile(mazeFileName string) ([][]string, int) {
 	}
 	return parsedMaze, rows
 }
+
+//UTILS
+func isIllegalCollision(t tile) bool {
+	return (!(uint8(t) > uint8(wall)))
+}
+
+func getPlayerID(t tile) string {
+	switch t {
+
+	}
+}

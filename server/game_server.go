@@ -90,6 +90,10 @@ func updateObjectPosition(g *game, id string, v *posVector) {
 	writeToAllPlayers(g, "PONG GAME-ENTITY-POS "+id+"-"+v.toString())
 }
 
+func sendPelletConsumed(g *game, v *posVector) {
+	writeToAllPlayers(g, "PONG GAME-PELLET-HOM "+v.toString()) //client should get rid of pellet AND increase score for pac-man (if it is keeping track for visual purposes)
+}
+
 //func updateObjectState(g *game, o *gameObject, state objectState) {
 //	writeToAllPlayers(g, "PONG GAME-OBJECT-STATE " + o.string_ID + "-" + string(objectState))
 //}
