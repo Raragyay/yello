@@ -46,7 +46,7 @@ func main() {
 	http.Handle("/", fs)
 
 	//signify socket connections
-	server.OnConnect("/", handleQueueSockets)
+	server.OnConnect("/", handleSockets)
 
 	log.Println("Serving at localhost:5000...")
 	log.Fatal(http.ListenAndServe(":5000", nil))
