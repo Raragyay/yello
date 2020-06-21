@@ -4,26 +4,26 @@ import (
 	"bufio"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
 	"math/rand"
 	"os"
+	"strings"
 	"sync"
 )
 
-type objectType string
+type tileType string
 
 const (
-	blankTile  objectType = "000"
-	pelletTile objectType = "002"
+	blankTile  tileType = "000"
+	pelletTile tileType = "002"
 
-	p1 objectType = "004"
-	p2 objectType = "010" //ghost- blinkly
-	p3 objectType = "011" //ghost- pinky
-	p4 objectType = "012" //inky
-	p5 objectType = "013" //clyde
+	p1 tileType = "004"
+	p2 tileType = "010" //ghost- blinkly
+	p3 tileType = "011" //ghost- pinky
+	p4 tileType = "012" //inky
+	p5 tileType = "013" //clyde
 
-	wall objectType = "100"
+	wall tileType = "100"
 )
 
 var (
@@ -39,6 +39,15 @@ type player struct {
 	startCol int
 	ghost    bool
 	active   bool
+}
+
+type level struct {
+	isWall   [][]bool
+	cols     int
+	rows     int
+	levelMap [][]tileType
+	player   player
+	ghosts   []ghost
 }
 
 type ghost struct {
@@ -227,24 +236,8 @@ func main() {
 	//defer cleanup()
 
 	// load resources
-	err, resultMaze := loadMaze(*mazeFile)
-	if err != nil {
-		log.Println("failed to load maze:", err)
-		return
-	}
-	for i := 0; i < len(resultMaze); i++ {
-		fmt.Println(resultMaze[i])
-		fmt.Println("===")
-	}
-	fmt.Println(len(resultMaze))
-	//for i := 0; i < len(resultMaze); i++ {
-	//	for j := 0; j < len(resultMaze[i]); j++ {
-	//		fmt.Printf("%s ", resultMaze[i][j])
-	//	}
-	//	fmt.Println()
-	//}
-	//fmt.Println(resultMaze)
-	//
+	maze := loadAndParseMazeFile(*mazeFile)
+	println(len(maze))
 	//// process input (async)
 	//input := make(chan string)
 	//go func(ch chan<- string) {
@@ -277,4 +270,21 @@ func main() {
 	//		}
 	//	}
 	//}
+}
+
+func loadAndParseMazeFile(mazeFileName string) [][]tileType {
+	err, rawMaze := loadMaze(mazeFileName)
+	if err != nil {
+		log.Println("failed to load maze:", err)
+		return nil
+	}
+	parsedMaze := make([][]tileType, len(rawMaze))
+	for i := 0; i < len(rawMaze); i++ {
+		split_row := strings.Split(rawMaze[i], " ")
+		parsedMaze[i] = make([]tileType, len(split_row))
+		for j := 0; j < len(split_row); j++ {
+			parsedMaze[i][j] = tileType(split_row[j])
+		}
+	}
+	return parsedMaze
 }
