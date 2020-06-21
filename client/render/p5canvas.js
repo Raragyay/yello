@@ -11,6 +11,7 @@ let levelHeight, levelWidth;
 let block_size;
 var player1;
 
+const options = {probabilityThreshold: 0.8};
 setupstt();
 
 function loadJSON(filePath, success, error) {
@@ -130,7 +131,6 @@ function updateCommand(newCmd) {
 
 // Initialize a sound classifier method with SpeechCommands18w model.
 let classifier;
-const options = {probabilityThreshold: 0.8};
 // Two variables to hold the label and confidence of the result
 let label;
 let confidence;
