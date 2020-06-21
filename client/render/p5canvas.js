@@ -168,7 +168,8 @@ class BigPellet extends Pellet {
 }
 
 class Entity {
-    constructor() {
+    constructor(sprite) {
+        this.sprite=sprite
         this.xblock = 10;
         this.yblock = 2;
         //this.xpx = this.xblock * block_size;
