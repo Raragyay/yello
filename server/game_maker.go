@@ -50,7 +50,7 @@ func handleQueuedPlayer(newPlayer *clientPlayer) {
 				for j := i + 1; j < playersInEachGame; j++ {
 					queuedPlayers[j-1] = queuedPlayers[j]
 				}
-				queuedPlayers = queuedPlayers[:len(queuedPlayers)-2] //discard last element that is now a duplicate
+				queuedPlayers = queuedPlayers[:len(queuedPlayers)-1] //discard last element that is now a duplicate
 				break
 			}
 		}
