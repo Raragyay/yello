@@ -1,8 +1,3 @@
-/* ===
-ml5 Example
-Sound classification using SpeechCommands18w and p5.js
-This example uses a callback pattern to create the classifier
-=== */
 
 // Initialize a sound classifier method with SpeechCommands18w model.
 let classifier;
@@ -25,6 +20,8 @@ async function setup() {
   // Classify the sound from microphone in real time
   classifier.classify(gotResult);
 }
+
+
 setup();
 console.log("ml5 version:", ml5.version);
 
