@@ -19,7 +19,7 @@ socket.onerror = error => {
 };
 
 socket.onmessage = (msg) =>{
-    console.log("Server: " + msg);
+    console.log("Server: " + String(msg));
 }
 
 
