@@ -12,7 +12,7 @@ import (
 	"sync"
 )
 
-type tileType string
+type tile int
 
 type posVector struct {
 	x int
@@ -24,20 +24,22 @@ func (v posVector) toString() string {
 }
 
 const (
-	//THINGS YOU CAN BE ON TOP OF
-	blankTile  tileType = "000"
-	pelletTile tileType = "002"
+// //THINGS YOU CAN BE ON TOP OF
+// blankTile  tileType = "000"
+// pelletTile tileType = "002"
 
-	//THINGS THAT MOVE
-	p1 tileType = "004"
-	p2 tileType = "010" //ghost- blinkly
-	p3 tileType = "011" //ghost- pinky
-	p4 tileType = "012" //inky
-	p5 tileType = "013" //clyde
+// //THINGS THAT MOVE
+// p1 tileType = "004"
+// p2 tileType = "010" //ghost- blinkly
+// p3 tileType = "011" //ghost- pinky
+// p4 tileType = "012" //inky
+// p5 tileType = "013" //clyde
 
-	//pelletWithP1 = "024"
+// //pelletWithP1 = "024"
 
-	wall tileType = "100"
+// wall tileType = "100"
+
+//TILE ENUM
 )
 
 var (
@@ -56,12 +58,11 @@ type player struct {
 }
 
 type level struct {
-	isWall   [][]bool
-	cols     int
-	rows     int
-	levelMap [][]tileType
-	player   player
-	ghosts   []ghost
+	isWall [][]bool
+	cols   int
+	rows   int
+	player player
+	ghosts []ghost
 }
 
 type ghost struct {
@@ -286,19 +287,19 @@ func yes() {
 	//}
 }
 
-func loadAndParseMazeFile(mazeFileName string) ([][]tileType, int) {
+func loadAndParseMazeFile(mazeFileName string) ([][]string, int) {
 	rawMaze, err := loadMaze(mazeFileName)
 	if err != nil {
 		log.Println("failed to load maze:", err)
 		return nil, 0
 	}
-	parsedMaze := make([][]tileType, len(rawMaze))
+	parsedMaze := make([][]string, len(rawMaze))
 	rows := len(rawMaze)
 	for i := 0; i < rows; i++ {
 		splitRow := strings.Split(rawMaze[i], " ")
-		parsedMaze[i] = make([]tileType, len(splitRow))
+		parsedMaze[i] = make([]string, len(splitRow))
 		for j := 0; j < len(splitRow); j++ {
-			parsedMaze[i][j] = tileType(splitRow[j])
+			parsedMaze[i][j] = string(splitRow[j])
 		}
 	}
 	return parsedMaze, rows
