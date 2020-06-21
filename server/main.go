@@ -165,6 +165,9 @@ func reader(conn *websocket.Conn) {
 	for p.valid && serverActive {
 		// read in a message
 		messageType, data, err := conn.ReadMessage()
+		if !p.valid || !serverActive {
+			return
+		}
 		p.m.RLock()
 		if err != nil {
 			p.m.RUnlock()
