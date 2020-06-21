@@ -26,7 +26,7 @@ type clientCallSpecification struct {
 	isDirectMessage bool
 }
 
-type clientMessageHandle func(*playerRequest)
+type clientMessageHandle func(*playerRequest, string)
 
 //clientPlayer is a struct that holds all the pointers and information about the player as well as the connection. Some variables can be null depending on the state
 //the player is in. Thus, each concurrent operation is handled such that it is either the sub-operation of an operation that it knows will ensure the existence
