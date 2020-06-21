@@ -1,4 +1,4 @@
-window.alert("pls work")
+window.alert("pls work");
 
-socket = io.connect("/queue")
+socket = io.connect("/queue");
 
