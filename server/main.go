@@ -10,6 +10,10 @@ import (
 
 var serverActive bool = false
 
+const (
+	hardDebugMode bool = true
+)
+
 //clientPlayer is a struct that holds all the pointers and information about the player as well as the connection. Some variables can be null depending on the state
 //the player is in. Thus, each concurrent operation is handled such that it is either the sub-operation of an operation that it knows will ensure the existence
 //of the variables it wants to use or it is said operation itself.
@@ -81,25 +85,44 @@ func writeMessage(p *clientPlayer, data []byte) {
 	}
 }
 
-// define a reader which will listen for
-// new messages being sent to our WebSocket
-// endpoint
+//reader listens to all messages from a specific client
 func reader(conn *websocket.Conn) {
-	defer handlepanic()
-	initializePlayer(conn)
+	var p *clientPlayer
+	defer handlepanic(p)
+	p = initializePlayer(conn)
 	for {
 		// read in a message
-		messageType, p, err := conn.ReadMessage()
+		messageType, data, err := conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		// print out that message for clarity
-		fmt.Println(string(p))
+		p.messageType = messageType //in case message type changes. I am doing this just to make sure. I do not think it's that important, and I don't think it's good practice so feel free to remove
 
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			log.Println(err)
-			return
+		fields, flag := parseUtilsAndSignal(string(data), 2) //is it 2 fields message?
+
+		if flag == ok {
+			//2 fields message!
+		} else if flag == notPONG || fields == nil {
+			//GET OUTTA HERE YOU NO PLAY PONG YOU MONSTER YOU GET OUT AAA
+			conn.WriteMessage(messageType, []byte("PONG INVALID"))
+			conn.Close()
+			panic("PONG INVALID")
+		}
+
+		//another number of fields message!
+		if len(fields) == 3 {
+
+		} else {
+			//invalid number of fields boi! GET OUTTA MY SERVER YE DEGENERATE
+			conn.WriteMessage(messageType, []byte("PONG INVALID"))
+			conn.Close()
+			panic("PONG INVALID FIELD NUMBERS")
+		}
+
+		if hardDebugMode {
+			// print out that message for extra clarity
+			fmt.Println(p.name + ": " + string(data))
 		}
 
 	}

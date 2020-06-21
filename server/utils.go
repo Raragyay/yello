@@ -22,7 +22,7 @@ func parseUtilsAndSignal(text string, expectedLen int) ([]string, parseFlag) {
 	}
 	if expectedLen != 0 {
 		if flen != expectedLen {
-			return nil, invalidParamsCount
+			return fields, invalidParamsCount
 		}
 	}
 	if fields[0] != "PONG" {
@@ -32,11 +32,14 @@ func parseUtilsAndSignal(text string, expectedLen int) ([]string, parseFlag) {
 	return fields, ok
 }
 
-func handlepanic() {
+func handlepanic(p *clientPlayer) {
 
 	if a := recover(); a != nil {
-
-		fmt.Println("RECOVER", a)
+		if p.name == "" {
+			fmt.Println("CRASH FOR UNINITIALIZED PLAYER: ", a)
+		} else {
+			fmt.Println("CRASH FOR PLAYER "+p.name+": ", a)
+		}
 	}
 }
 
