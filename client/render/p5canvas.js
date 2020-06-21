@@ -60,17 +60,34 @@ function preload() {
     // print(isWall)
 }
 
+<<<<<<< HEAD
 function calc_block_size() {
     console.log("calcblocksize");
     console.log(level);
+=======
+async function calc_block_size() {
+    while (level === undefined) {
+        await new Promise(resolve => {
+            setTimeout(function () {
+                resolve();
+            }, 1000)
+        })
+    }
+    console.log("Oh hey its loaded now")
+>>>>>>> 44d22d5f1a19158739bb0f937817765fc5350b2c
     levelHeight = windowHeight / 2
     levelWidth = windowHeight / 2 / level.length * level[0].length
     block_size = levelHeight / level.length
 }
 
+<<<<<<< HEAD
 function setup() {
   
     calc_block_size();
+=======
+async function setup() {
+    await calc_block_size();
+>>>>>>> 44d22d5f1a19158739bb0f937817765fc5350b2c
     var canvas = createCanvas(levelWidth, levelHeight);
     console.log("createdCanvas");
     // canvas.parent('sketch-div')
@@ -78,8 +95,8 @@ function setup() {
     console.log("setup");
 }
 
-function windowResized() {
-    calc_block_size();
+async function windowResized() {
+    await calc_block_size();
     resizeCanvas(levelWidth, levelHeight);
     console.log("alksjdlakjds");
 }
@@ -161,8 +178,6 @@ function updateCommand(newCmd) {
             player1.yspeed = 0;
     }
 }
-
-
 
 
 async function setupstt() {

@@ -6,7 +6,7 @@ import (
 	socketio "github.com/googollee/go-socket.io"
 )
 
-func handleQueueSockets(s socketio.Conn) error {
+func handleSockets(s socketio.Conn) error {
 	log.Println(s.RemoteAddr().String() + ": socket connection established.")
 	return nil
 }
