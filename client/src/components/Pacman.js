@@ -2,7 +2,7 @@
 
 import React from "react";
 import {connect} from 'react-redux';
-import {ReactComponent as PacmanSVG} from "./Pacman.svg";
+import {ReactComponent as PacmanSVG} from "../tileset/Pacman.svg";
 import {loadPage} from "../actions";
 
 
