@@ -1,4 +1,4 @@
-export {isWall};
+import {command} from "./stt.js"
 //import {background, createCanvas, loadImage, windowHeight, windowWidth} from "p5/global";
 
 let pellets = [];
@@ -45,6 +45,7 @@ function setup() {
     calc_block_size();
     var canvas=createCanvas(levelWidth, levelHeight);
     canvas.parent('sketch-div')
+    player1 = new Pacman();
 }
 
 function windowResized() {
@@ -77,8 +78,54 @@ function drawLevel() {
 function draw() {
     background(255);
     drawLevel();
+    player1.update();
+    player1.show();
 }
 
 function isWall(x, y){
     return isWall[y][x];
 }
+
+function Pacman(){
+    this.x = 0;
+    this.y = 0;
+    this.xspeed = 1;
+    this.yspeed = 0;
+
+    this.update = function() {
+      
+      if (isWall[this.x + this.xspeed][this.y + this.yspeed]){
+        this.xspeed = 0;
+        this.yspeed = 0;
+      }
+      else{
+        this.x = this.x + this.xspeed;
+        this.y = this.y + this.yspeed;
+      }
+  
+    this.show = function() {
+      fill(0);
+      rect(this.x, this.y, 100, 100);
+    }
+    }
+  }
+
+function updateCommand(newCmd){
+    command = newCmd;
+    switch(newCmd){
+      case up:
+        player1.xspeed = 0;
+        player1.yspeed = -1;
+        break;
+      case down:
+        player1.xspeed = 0;
+        player1.yspeed = 1;
+        break;
+      case left:
+        player1.xspeed = -1;
+        player1.yspeed = 0;
+      case right:
+        player1.xspeed = 1;
+        player1.yspeed = 0;
+    }
+  }

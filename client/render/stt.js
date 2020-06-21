@@ -5,9 +5,11 @@ const options = { probabilityThreshold: 0.8 };
 let label;
 let confidence;
 
-export let direction;
-export let wordToCmd = {};
+import {updateCommand} from 'p5canvas.js';
 
+export let command;
+
+export let wordToCmd = {};
 /*{
   red: 'left',
   yellow: 'up',
@@ -29,7 +31,7 @@ async function setup() {
     options
   );
   
-  updateMaps('red', 'yellow', 'green', 'blue');
+  updateDicts('red', 'yellow', 'green', 'blue');
 
   // Create 'label' and 'confidence' div to hold results,, delete eventually
 
@@ -59,20 +61,19 @@ function gotResult(error, results) {
   label.textContent = "Label: " + wordIn;
   confidence.textContent = "Confidence: " + results[0].confidence.toFixed(4);
 
-  return getCommand(wordIn);
-  
+  updateCommand(wordToCmd[wordIn]);
 }
 
-function getCommand()
 
 
-function updateMaps(newLeft, newUp, newDown, newRight){
+
+function updateDicts(newLeft, newUp, newDown, newRight){
   cmdToWord.left = newLeft;
   cmdToWord.up = newUp;
   cmdToWord.right = newRight;
   cmdToWord.down = newDown;
 
-  //update reverse map
+  //update reverse dict
   for(var key in cmdToWord) {
     if(cmdToWord.hasOwnProperty(key)){
       wordToCmd[cmdToWord[key]] = key;
