@@ -7,7 +7,7 @@ import (
 )
 
 type game struct {
-	p1, p2, p3, p4, p5 *playerGameData
+	p1, p2 *playerGameData
 	active             bool
 	maze               [21][25]string
 }
@@ -17,7 +17,7 @@ type game struct {
 
 const (
 	queueMessageSendCooldown time.Duration = time.Second * 2
-	playersInEachGame        int           = 5
+	playersInEachGame        int           = 2
 )
 
 var queuedPlayersChannel = make(chan *clientPlayer, 5) //channel to handle players joining queue
@@ -60,8 +60,8 @@ func handleQueuedPlayer(newPlayer *clientPlayer) {
 	}
 	if len(queuedPlayers) >= playersInEachGame {
 
-		go initializeGameServer(queuedPlayers[0], queuedPlayers[1], queuedPlayers[2], queuedPlayers[3], queuedPlayers[4])
-		queuedPlayers = queuedPlayers[5:] //TODO SLICE LENGTH ISSUE
+		go initializeGameServer(queuedPlayers[0], queuedPlayers[1])
+		queuedPlayers = queuedPlayers[2:] //TODO SLICE LENGTH ISSUE
 
 	} else {
 		fmt.Println("player", newPlayer.name, "joined queue and the queue now has at most", len(queuedPlayers), "players.")

@@ -87,15 +87,11 @@ async function setup() {
     // canvas.parent('sketch-div')
     player1 = new Player();
     console.log("setup");
-<<<<<<< HEAD
-    
     canvas.style.position = "relative";
     canvas.style('z-index', "-3");
-=======
     for (let i = 0; i < 21; i++) {
         pellets.push(new Pellet(i, 2))
     }
->>>>>>> b05f4b5ca8d99bec8931b5d538adbe170eb46890
 }
 
 async function windowResized() {
@@ -163,7 +159,6 @@ class BigPellet extends Pellet {
 }
 
 class Player {
-<<<<<<< HEAD
   constructor() {
     this.xblock = 10;
     this.yblock = 2;
@@ -194,37 +189,6 @@ class Player {
     };
     //return this;
   }
-=======
-    constructor() {
-        this.xblock = 10;
-        this.yblock = 2;
-        //this.xpx = this.xblock * block_size;
-        //this.ypx = this.yblock * block_size;
-        this.xspeed = 0;
-        this.yspeed = 0;
-
-        this.update = function () {
-            if (isWall[this.yblock + this.yspeed][this.xblock + this.xspeed]) {
-                this.xspeed = 0//0//this.x + this.xspeed*-0.1;
-                this.yspeed = 0//0//this.y + this.yspeed*-0.1;
-            } else {
-                this.xblock += this.xspeed;
-                this.yblock += this.yspeed;
-                //this.xblock = Math.floor(this.xpx/block_size + block_size/2);
-                //this.yblock = Math.floor(this.ypx/block_size + block_size/2);
-                //console.log(this.xblock, this.yblock);
-                //this.xpx = this.xpx + this.xspeed*0.1;
-                //this.ypx = this.ypx + this.yspeed*0.1;
-            }
-        };
-        this.show = function () {
-            fill('#F1DE6C');
-            rect(this.xblock * block_size, this.yblock * block_size, block_size, block_size);
-            //rect(this.xpx, this.ypx, block_size, block_size);
-        };
-        //return this;
-    }
->>>>>>> b05f4b5ca8d99bec8931b5d538adbe170eb46890
 }
 
 function updateCommand(newCmd) {

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"flag"
-	"math/rand"
 	"os"
 	"sync"
 )
@@ -59,13 +58,11 @@ func createplayer(name string, startRow int, startCol int) {
 	} else if !players[1].active {
 		players[1] = player{name, startRow, startCol, startRow, startCol, true, true}
 	} else if !players[2].active {
-		players[2] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
-	} else if players[3] == nil {
-		players[3] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
-	} else if players[4] == nil {
-		players[4] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
-	} else if players[5] == nil {
-		players[5] = player{PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL, true, true}
+		players[2] = player{name, startRow, startCol, startRow, startCol, true, true}
+	} else if !players[3].active {
+		players[3] = player{name, startRow, startCol, startRow, startCol, true, true}
+	} else if !players[4].active {
+		players[4] = player{name, startRow, startCol, startRow, startCol, true, true}
 	}
 }
 
@@ -89,14 +86,14 @@ func loadConfig(file string) error {
 	defer f.Close()
 
 	decoder := json.NewDecoder(f)
-	err = decoder.Decode(&cfg)
+	err = decoder.Decode(&configFile)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func loadMaze(maze *[21][25]string, g *game, file string) error {
+func loadMaze(maze *[] string, g *game, file string) error {
 	f, err := os.Open(file)
 	if err != nil {
 		return err
@@ -106,12 +103,12 @@ func loadMaze(maze *[21][25]string, g *game, file string) error {
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
-		maze = append(maze, line)
+		*maze = append(*maze, line)
 	}
 
 	//TODO parse into enum
-
-	for row, line := range maze {
+    /*
+	for row, line := range *maze {
 		for col, char := range line {
 			switch char {
 			case "004":
@@ -127,6 +124,7 @@ func loadMaze(maze *[21][25]string, g *game, file string) error {
 			}
 		}
 	}
+	*/
 	return nil
 }
 
@@ -156,7 +154,7 @@ func loadMaze(maze *[21][25]string, g *game, file string) error {
 // 	}
 // 	return "", nil
 // }
-
+/*
 func makeMove(oldRow, oldCol int, dir string) (newRow, newCol int) {
 	newRow, newCol = oldRow, oldCol
 
@@ -266,3 +264,4 @@ func drawDirection() string {
 // 		}
 // 	}
 // }
+*/
