@@ -14,7 +14,7 @@ import (
 
 var (
 	configFile = flag.String("config-file", "config.json", "/")
-	mazeFile   = flag.String("maze-file", "maze01.txt", "/")
+	mazeFile   = flag.String("maze-file", "map.txt", "/")
 )
 
 type player struct {
@@ -44,20 +44,20 @@ func createplayer(name string){
 	if name == "pacman"{
 		players[0] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,false)
 	}
-	else if player[1] == nil{
-		player[1] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
+	else if players[1] == nil{
+		players[1] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
 	}
-	else if player[2] == nil{
-		player[2] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
+	else if players[2] == nil{
+		players[2] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
 	}
-	else if player[3] == nil{
-		player[3] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
+	else if players[3] == nil{
+		players[3] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
 	}
-	else if player[4] == nil{
-		player[4] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
+	else if players[4] == nil{
+		players[4] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
 	}
-	else if player[5] == nil{
-		player[5] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
+	else if players[5] == nil{
+		players[5] = player(PLAYERNAME, STARTROW, STARTCOL, STARTROW, STARTCOL,true)
 	}
 }
 
@@ -104,16 +104,21 @@ func loadMaze(file string) error {
 	for row, line := range maze {
 		for col, char := range line {
 			switch char {
-			case 'P':
+			case '004':
 				player = player{row, col, row, col}
-			case 'G':
+			case '010':
 				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
-			case '.':
+			case '011':
+				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+			case '012':
+				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+			case '013':
+				ghosts = append(ghosts, &ghost{player{row, col, row, col}, GhostStatusNormal})
+			case '002':
 				numDots++
 			}
 		}
 	}
-
 	return nil
 }
 
