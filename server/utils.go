@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type parseFlag int
 
@@ -27,4 +30,12 @@ func parseUtilsAndSignal(text string, expectedLen int) ([]string, parseFlag) {
 	}
 
 	return fields, ok
+}
+
+func handlepanic() {
+
+	if a := recover(); a != nil {
+
+		fmt.Println("RECOVER", a)
+	}
 }
