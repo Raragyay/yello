@@ -48,6 +48,33 @@ function load_level(levelData) {
     calc_block_size()
 }
 
+function updatePositionOfEntity(data) {
+    let split_data = data.split(' ')[2].split('-');
+    let x = parseInt(split_data[1])
+    let y = parseInt(split_data[2])
+    if (split_data[0] === 'p1') {
+        //VECTOR TOSTRING SYNTAX WILL HAVE TO BE GIVEN. CURRENTLY ASSUME IT IS GIVEN AS {X}-{Y}
+        player.setPosition(x, y)
+    } else if (split_data[0] === 'p2') {
+        blinky.setPosition(x, y)
+    } else if (split_data[0] === 'p3') {
+        inky.setPosition(x, y)
+    } else if (split_data[0] === 'p4') {
+        pinky.setPosition(x, y)
+    } else if (split_data[0] === 'p5') {
+        clyde.setPosition(x, y)
+    }
+}
+
+function nullifyPellet(data) {
+    let split_data = data.split(' ')[2].split('-');
+    let x = parseInt(split_data[0])
+    let y = parseInt(split_data[1])
+    let pellet = pellets.find(element => element.x === x && element.y === y)
+    pellet.draw = () => {
+    }
+}
+
 socket.onmessage = (msg) => {
     let data = msg.data;
     if (data.startsWith("PONG QUEUE")) {
@@ -61,14 +88,9 @@ socket.onmessage = (msg) => {
     } else if (data.startsWith("PONG GAME-INVALID")) {
         console.log("SERVER: INVALID GAME")
     } else if (data.startsWith("PONG GAME-ENTITY-POS")) { //PONG GAME-ENTITY-POS p1-3-5
-        let split_data = data.split(' ')[2].split('-');
-        if (split_data[0] === 'p1') {
-            //VECTOR TOSTRING SYNTAX WILL HAVE TO BE GIVEN. CURRENTLY ASSUME IT IS GIVEN AS {X}-{Y}
-            player1.xblock = parseInt(split_data[1])
-            player1.yblock = parseInt(split_data[2])
-        }
+        updatePositionOfEntity(data);
     } else if (data.startsWith("PONG GAME-PELLET-HOM")) {
-        //TODO CONSUME PELLET
+        nullifyPellet(data);
     }
     console.log("Server: " + msg.data);
 }

@@ -34,8 +34,6 @@ let level, isWall;
 let levelHeight, levelWidth;
 let block_size;
 
-entities.push(new Entity())
-
 
 function loadTXT(filePath, success, error) {
     var xhr = new XMLHttpRequest();
@@ -59,11 +57,11 @@ let player_image, blinky_image, inky_image, pinky_image, clyde_image
 
 function preload() {
     loadTXT('./levels/level2.txt', load_level)
-    player_image = loadImage('images/player_image.png')
-    blinky_image = loadImage('images/blinky_image.png')
-    inky_image = loadImage('images/inky_image.png')
-    pinky_image = loadImage('images/pinky_image.png')
-    clyde_image = loadImage('images/clyde_image.png')
+    player_image = loadImage('images/pacman.png')
+    blinky_image = loadImage('images/blinky.png')
+    inky_image = loadImage('images/inky.png')
+    pinky_image = loadImage('images/pinky.png')
+    clyde_image = loadImage('images/clyde.png')
 }
 
 const waitForLevelToBeDefined = () => {
@@ -88,6 +86,7 @@ function calc_block_size(cb = function () {
 
 
 async function setup() {
+    player1=new Player(player_image)
     calc_block_size(() => {
         canvas = createCanvas(levelWidth, levelHeight);
         console.log("createdCanvas");
@@ -169,7 +168,7 @@ class BigPellet extends Pellet {
 
 class Entity {
     constructor(sprite) {
-        this.sprite=sprite
+        this.sprite = sprite
         this.xblock = 10;
         this.yblock = 2;
         //this.xpx = this.xblock * block_size;
@@ -192,6 +191,11 @@ class Entity {
             //rect(this.xpx, this.ypx, block_size, block_size);
         };
         //return this;
+    }
+
+    setPosition(x, y) {
+        this.x = x
+        this.y = y
     }
 }
 
