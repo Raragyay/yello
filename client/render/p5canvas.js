@@ -98,7 +98,7 @@ async function windowResized() {
 
 
 function drawLevel() {
-   
+
   fill('#57D4EF')
     noStroke()
     for (let i = 0; i < isWall.length; i++) {
@@ -243,7 +243,7 @@ function updateDicts(newLeft, newUp, newRight, newDown) {
 
 setupstt();
 
-//arrow key navigation 
+//arrow key navigation
 document.onkeydown = checkKey;
 
 function checkKey(e) {
