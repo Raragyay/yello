@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/gorilla/websocket"
 )
@@ -18,10 +19,14 @@ const (
 //the player is in. Thus, each concurrent operation is handled such that it is either the sub-operation of an operation that it knows will ensure the existence
 //of the variables it wants to use or it is said operation itself.
 type clientPlayer struct {
-	conn        *websocket.Conn
-	name        string
-	messageType int
-	activeGame  *game
+	conn              *websocket.Conn
+	name              string
+	messageType       int
+	activeGame        *game
+	valid             bool
+	writeChannel      chan *writeRequest
+	disconnectChannel chan interface{} //an empty interface is used as no data is passed, just the existence of the signal is enough
+	m                 sync.RWMutex     //Thou shalt not both read and write from a connection from different threads. Alas, thou must nonetheless keep both threads listening- one from client and one for write requests within server.
 }
 
 func corsMiddleware(next http.Handler) http.Handler {
@@ -84,55 +89,16 @@ func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func writeMessage(p *clientPlayer, data []byte) {
+	if !p.valid { //invalids have no place here
+		return
+	}
 	if err := p.conn.WriteMessage(p.messageType, data); err != nil {
 		log.Println(err)
 		return
 	}
 }
 
-//reader listens to all messages from a specific client and then passes it down to everything. it is basically God, if there was different instances of God for each person.
-func reader(conn *websocket.Conn) {
-	var p *clientPlayer
-	defer handlepanic(p)
-	p = initializePlayer(conn)
-	fmt.Println("Player initialized: " + p.name)
-	for {
-		// read in a message
-		messageType, data, err := conn.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		p.messageType = messageType //in case message type changes. I am doing this just to make sure. I do not think it's that important, and I don't think it's good practice so feel free to remove
-
-		fields, flag := parseUtilsAndSignal(string(data), 2) //is it 2 fields message?
-
-		if flag == ok {
-			//2 fields message!
-		} else if flag == notPONG || fields == nil {
-			//GET OUTTA HERE YOU NO PLAY PONG YOU MONSTER YOU GET OUT AAA
-			conn.WriteMessage(messageType, []byte("PONG INVALID"))
-			conn.Close()
-			panic("PONG INVALID")
-		}
-
-		//another number of fields message!
-		if len(fields) == 3 {
-
-		} else {
-			//invalid number of fields boi! GET OUTTA MY SERVER YE DEGENERATE
-			conn.WriteMessage(messageType, []byte("PONG INVALID"))
-			conn.Close()
-			panic("PONG INVALID FIELD NUMBERS")
-		}
-
-		if hardDebugMode {
-			// print out that message for extra clarity
-			fmt.Println(p.name + ": " + string(data))
-		}
-
-	}
-}
+//READER
 
 func initializePlayer(conn *websocket.Conn) *clientPlayer {
 	// read in a message
@@ -154,8 +120,114 @@ func initializePlayer(conn *websocket.Conn) *clientPlayer {
 	fmt.Println(string(data))
 
 	return &clientPlayer{
-		conn:        conn,
-		messageType: messageType,
-		name:        fields[1],
+		conn:              conn,
+		messageType:       messageType,
+		name:              fields[1],
+		valid:             true,
+		disconnectChannel: make(chan interface{}, 3), //the two channel size numbers can be reduced if this is scaled. I am leaving high numbers for debugging purposes.
+		writeChannel:      make(chan *writeRequest, 6),
 	}
+}
+
+//reader listens to all messages from a specific client and then passes it down to everything. it is basically God, if there was different instances of God for each person.
+//It heeds our prayers so that we may gracefully play pong and marvel at the beauty of the front-end.
+func reader(conn *websocket.Conn) {
+	var p *clientPlayer
+	defer handlepanic(p)
+	p = initializePlayer(conn)
+	fmt.Println("Player initialized: " + p.name)
+	go channelsListener(p) //one thread listens within, other listens out. the one who listens within also writes the messages.
+	for {
+		// read in a message
+		messageType, data, err := conn.ReadMessage()
+		p.m.RLock()
+		if err != nil {
+			p.m.RUnlock()
+			log.Println(err)
+			p.writeChanneledMessage("PONG INVALID")
+			handleDisconnectPlayer(p)
+			panic("PONG INVALID")
+		}
+		p.messageType = messageType //in case message type changes. I am doing this just to make sure. I do not think it's that important, and I don't think it's good practice so feel free to remove
+
+		fields, flag := parseUtilsAndSignal(string(data), 2) //is it 2 fields message?
+
+		if flag == ok {
+			//2 fields message!
+		} else if flag == notPONG || fields == nil {
+			//GET OUTTA HERE YOU NO PLAY PONG YOU MONSTER YOU GET OUT AAA
+			p.m.RUnlock()
+			p.writeChanneledMessage("PONG INVALID")
+			handleDisconnectPlayer(p)
+			panic("PONG INVALID")
+		}
+
+		//another number of fields message!
+		if len(fields) == 3 { //can add more cases like this with more else if or can switch to switch if it becomes inefficient
+
+		} else {
+			//invalid number of fields boi! GET OUTTA MY SERVER YE DEGENERATE
+			p.m.RUnlock()
+			p.writeChanneledMessage("PONG INVALID")
+			handleDisconnectPlayer(p)
+			panic("PONG INVALID FIELD NUMBER")
+		}
+
+		p.m.RUnlock()
+
+		if hardDebugMode {
+			// print out that message for extra clarity
+			fmt.Println(p.name + ": " + string(data))
+		}
+
+	}
+}
+
+func (p *clientPlayer) writeChanneledMessage(msg string) {
+	p.writeChannel <- &writeRequest{message: msg}
+}
+
+func handleDisconnectPlayer(p *clientPlayer) {
+	p.disconnectChannel <- struct{}{} //first time seeing this might be weird. interface{} is type. interface{}{} is instantiation ;)
+}
+
+//INWARDS LISTENER AND WRITER
+
+//channelsListener ensures that the channels of a player is always functional, but only if the player is valid.
+func channelsListener(p *clientPlayer) {
+	conn := *p.conn
+	for p.valid && serverActive {
+		if !p.valid {
+			return
+		}
+		select {
+		case w := <-p.writeChannel:
+			p.m.Lock()
+			writeMessage(p, []byte(w.message))
+			p.m.Unlock()
+			break
+		case <-p.disconnectChannel:
+			p.m.Lock()
+			fmt.Println("disconnecting through channel: " + p.name)
+			writeMessage(p, []byte("PONG CLOSE"))
+			removeClient(p)
+			conn.Close()
+			p.m.Unlock()
+			return
+		}
+	}
+}
+
+func removeClient(p *clientPlayer) {
+
+}
+
+//INNER COMMUNICATION TYPES
+type writeRequest struct {
+	message string
+}
+
+type playerRequest struct {
+	message string
+	p       *clientPlayer
 }
