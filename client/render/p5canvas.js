@@ -9,7 +9,7 @@ loadJSON('./levels/level1.json', x => {
 })
 let levelHeight, levelWidth;
 let block_size;
-let player1;
+let player1 = new Pacman;
 
 function loadJSON(filePath, success, error) {
     var xhr = new XMLHttpRequest();
@@ -45,7 +45,8 @@ function setup() {
     calc_block_size();
     var canvas=createCanvas(levelWidth, levelHeight);
     canvas.parent('sketch-div')
-    player1 = new Pacman();
+    //player1 = new Pacman();
+    console.log('scream')
 }
 
 function windowResized() {
@@ -152,7 +153,7 @@ let cmdToWord = {
 }
 
 
-async function setup() {
+async function stt() {
   classifier = await ml5.soundClassifier(
     "https://storage.googleapis.com/tm-model/RoRt49x-Z/model.json",
     options
