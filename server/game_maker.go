@@ -8,8 +8,8 @@ import (
 
 type game struct {
 	p1, p2 *playerGameData
-	active             bool
-	maze               [21][25]string
+	active bool
+	maze   [21][25]string
 }
 
 //game_maker queues players up and puts them under a certain game_manager. It queues them up and delegates them into different games depending on whether a game is
@@ -60,8 +60,8 @@ func handleQueuedPlayer(newPlayer *clientPlayer) {
 	}
 	if len(queuedPlayers) >= playersInEachGame {
 
-		go initializeGameServer(queuedPlayers[0], queuedPlayers[1])
-		queuedPlayers = queuedPlayers[2:] //TODO SLICE LENGTH ISSUE
+		go initializeGameServer(queuedPlayers[0], queuedPlayers[1]) //add others later
+		queuedPlayers = queuedPlayers[playersInEachGame:]           //TODO SLICE LENGTH ISSUE
 
 	} else {
 		fmt.Println("player", newPlayer.name, "joined queue and the queue now has at most", len(queuedPlayers), "players.")

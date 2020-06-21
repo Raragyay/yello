@@ -7,16 +7,28 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 )
 
 type tileType string
 
+type posVector struct {
+	x int
+	y int
+}
+
+func (v posVector) toString() string {
+	return strconv.Itoa(v.x) + "-" + strconv.Itoa(v.y)
+}
+
 const (
+	//THINGS YOU CAN BE ON TOP OF
 	blankTile  tileType = "000"
 	pelletTile tileType = "002"
 
+	//THINGS THAT MOVE
 	p1 tileType = "004"
 	p2 tileType = "010" //ghost- blinkly
 	p3 tileType = "011" //ghost- pinky
@@ -238,8 +250,8 @@ func yes() {
 	//defer cleanup()
 
 	// load resources
-	maze := loadAndParseMazeFile(*mazeFile)
-	println(len(maze))
+	// maze := loadAndParseMazeFile(*mazeFile)
+	// println(len(maze))
 	//// process input (async)
 	//input := make(chan string)
 	//go func(ch chan<- string) {
@@ -274,19 +286,20 @@ func yes() {
 	//}
 }
 
-func loadAndParseMazeFile(mazeFileName string) [][]tileType {
+func loadAndParseMazeFile(mazeFileName string) ([][]tileType, int) {
 	rawMaze, err := loadMaze(mazeFileName)
 	if err != nil {
 		log.Println("failed to load maze:", err)
-		return nil
+		return nil, 0
 	}
 	parsedMaze := make([][]tileType, len(rawMaze))
-	for i := 0; i < len(rawMaze); i++ {
+	rows := len(rawMaze)
+	for i := 0; i < rows; i++ {
 		splitRow := strings.Split(rawMaze[i], " ")
 		parsedMaze[i] = make([]tileType, len(splitRow))
 		for j := 0; j < len(splitRow); j++ {
 			parsedMaze[i][j] = tileType(splitRow[j])
 		}
 	}
-	return parsedMaze
+	return parsedMaze, rows
 }
