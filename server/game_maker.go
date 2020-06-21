@@ -19,8 +19,8 @@ const (
 var queuedPlayersChannel = make(chan *clientPlayer, 5) //channel to handle players joining queue
 var queuedPlayers = make([]*clientPlayer, 0, 20)       //slice to store all those who are looking for games.
 
-func queuePlayer(req *playerRequest) {
-
+func queuePlayer(req *playerRequest, argument string) {
+	queuedPlayersChannel <- req.p
 }
 
 func queueSystem() {
