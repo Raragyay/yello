@@ -16,6 +16,18 @@ const (
 	hardDebugMode bool = true
 )
 
+//2 fields are for direct messages. 3 fields are for direct + variable pass
+var handledClientCalls = map[clientCallSpecification]clientMessageHandle{
+	clientCallSpecification{}: queuePlayer,
+}
+
+type clientCallSpecification struct {
+	msgBase         string
+	isDirectMessage bool
+}
+
+type clientMessageHandle func(*playerRequest)
+
 //clientPlayer is a struct that holds all the pointers and information about the player as well as the connection. Some variables can be null depending on the state
 //the player is in. Thus, each concurrent operation is handled such that it is either the sub-operation of an operation that it knows will ensure the existence
 //of the variables it wants to use or it is said operation itself.
@@ -167,6 +179,7 @@ func reader(conn *websocket.Conn) {
 
 		if flag == ok {
 			//2 fields message!
+
 		} else if flag == notPONG || fields == nil {
 			//GET OUTTA HERE YOU NO PLAY PONG YOU MONSTER YOU GET OUT AAA
 			p.m.RUnlock()
