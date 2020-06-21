@@ -39,16 +39,13 @@ const (
 var ghostsStatusMx sync.RWMutex
 
 type config struct {
-	Player           string        `json:"player"`
-	Ghost            string        `json:"ghost"`
-	GhostBlue        string        `json:"ghost_blue"`
-	Wall             string        `json:"wall"`
-	Dot              string        `json:"dot"`
-	Pill             string        `json:"pill"`
-	Death            string        `json:"death"`
-	Space            string        `json:"space"`
-	UseEmoji         bool          `json:"use_emoji"`
-	PillDurationSecs time.Duration `json:"pill_duration_secs"`
+	Player    string `json:"player"`
+	Ghost     string `json:"ghost"`
+	GhostBlue string `json:"ghost_blue"`
+	Wall      string `json:"wall"`
+	Dot       string `json:"dot"`
+	Death     string `json:"death"`
+	Space     string `json:"space"`
 }
 
 func loadConfig(file string) error {
@@ -119,7 +116,6 @@ func readInput() (string, error) {
 			}
 		}
 	}
-
 	return "", nil
 }
 
@@ -153,7 +149,6 @@ func makeMove(oldRow, oldCol int, dir string) (newRow, newCol int) {
 		newRow = oldRow
 		newCol = oldCol
 	}
-
 	return
 }
 
@@ -169,11 +164,6 @@ func movePlayer(dir string) {
 		numDots--
 		score++
 		removeDot(player.row, player.col)
-	case 'X':
-		score += 10
-		removeDot(player.row, player.col)
-		go processPill()
-	}
 }
 
 func drawDirection() string {
@@ -223,8 +213,7 @@ func main() {
 				lives = 0
 			}
 			movePlayer(inp)
-
-			moveGhosts()
+			moveGhosts(inp)
 			// check game over
 			if numDots == 0 || lives <= 0 {
 				if lives == 0 {
@@ -232,9 +221,6 @@ func main() {
 				}
 				break
 			}
-
-			// repeat
-			time.Sleep(200 * time.Millisecond)
 		}
 	}
 }
