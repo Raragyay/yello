@@ -11,12 +11,29 @@ function sendSocketMessage(msg) {
 
 let socketOpen = false
 socket.onopen = () => {
-    console.log('CONNECTION ESTABLISHED')
+    console.log('Client: CONNECTION ESTABLISHED')
     socketOpen = true
-
-    sendSocketMessage("PONG " + "TESTER");
-    sendSocketMessage("PONG QUEUE");
 }
+
+socket.onclose = event => {
+    console.log("Socket Closed Connection: ", event);
+    sendSocketMessage("PONG CLOSE")
+    socketOpen = false;
+}
+socket.onerror = error => {
+    console.error("Socket Error: ", error);
+};
+
 socket.onmessage = (msg) => {
+    var data = msg.data
+    if (data.startsWith("PONG QUEUE")) {
+        document.getElementById("queue").innerText = data.split(" ")[2]
+    }
     console.log("Server: " + msg.data);
 }
+
+document.getElementById("play").addEventListener("click", () => {
+    var name = document.getElementById("nick").value;
+    sendSocketMessage("PONG " + name)
+    sendSocketMessage("PONG QUEUE")
+})

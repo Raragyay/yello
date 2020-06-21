@@ -9,9 +9,15 @@
     <script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js"></script> <!--for stt-->
     <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script> <!--for stt-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body style="background-color: #5F4DD7;">
 <!--<script type="module" src="stt.js"></script>-->
+<div id="mainui-play">
+    <input id="nick" placeholder="Nickname" maxlength="15" autofocus="autofocus">
+    <button id="play" type="submit" class="btn-play">Play</button>
+    <span id="queue"></span>
+</div>
 <script src="p5canvas.js"></script>
 <script src="socket.js"></script>
 
