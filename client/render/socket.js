@@ -38,7 +38,7 @@ function load_level(levelData) {
             if (split_level_data[idx] === '002') {
                 pellets.push(new Pellet(j, i))
             } else if (split_level_data[idx] === '003') {
-                pellets.push(new Pellet(j, i))
+                pellets.push(new BigPellet(j, i))
             }
             idx++
         }
@@ -58,21 +58,15 @@ socket.onmessage = (msg) => {
         gameActive = true
     } else if (data.startsWith("PONG SET-LEVEL")) {
         load_level(data.split(' ')[2])
-    } else if (data.startsWith("PONG GAME-UPDATE-POS")) {
-        let split_data = data.split(' ');
-        if (split_data[2] === 'p1') {
+    } else if (data.startsWith("PONG GAME-INVALID")) {
+        console.log("SERVER: INVALID GAME")
+    } else if (data.startsWith("PONG GAME-ENTITY-POS")) { //PONG GAME-ENTITY-POS p1-3-5
+        let split_data = data.split(' ')[2].split('-');
+        if (split_data[0] === 'p1') {
             //VECTOR TOSTRING SYNTAX WILL HAVE TO BE GIVEN. CURRENTLY ASSUME IT IS GIVEN AS {X}-{Y}
-            let pvector = split_data[3].split('-');
-            player1.xblock = parseInt(pvector[0])
-            player1.yblock = parseInt(pvector[1])
+            player1.xblock = parseInt(split_data[1])
+            player1.yblock = parseInt(split_data[2])
         }
-    } else if (data.startsWith("PONG SET-TILE")) {
-        let split_data = data.split(' ');
-        let pvector = split_data[2].split('-');
-        let x = parseInt(pvector[0])
-        let y = parseInt(pvector[1])
-        level[x][y] = split_data[3]
-        isWall[x][y] = level[x][y] === "100"
     }
     console.log("Server: " + msg.data);
 }

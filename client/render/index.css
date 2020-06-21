@@ -15,7 +15,7 @@
 
 #nick {
     position: relative;
-    margin: 20px;
+    margin: 10%;
     border-radius: 5px;
     border-style: solid;
     border-color: #A2A2A2;
@@ -24,6 +24,12 @@
     display: inline-block;
 }
 
+#yello {
+    max-height: 20vh;
+    z-index: 999;
+}
+
+
 .btn-play {
     width: 70%;
     font-size: 120%;
@@ -31,7 +37,7 @@
     color: white;
     background-color: #f0d465;
     border-radius: 10px;
-    margin: 20px;
+    margin: 10px;
     border: 1px solid transparent;
     display: inline-block;
     bottom: 20%;
@@ -43,6 +49,13 @@
 .btn-play:hover {
     background-color: #f3e956;
 }
+
+.labels {
+    position: absolute;
+    margin: 0 auto;
+    bottom: 50px;
+}
+
 
 #queue {
     position: relative;
@@ -67,3 +80,14 @@ body {
 input, button, select, textarea, form, table {
     font-family: inherit;
 }
+
+.p5Canvas {
+    margin: 10vh auto;
+}
+
+
+/*#canvas-div{
+    top: 40%;
+    left: 50%;                         
+    transform: translate(-50%);
+}*/
