@@ -31,7 +31,7 @@ let cmdToWord = {
 let pellets = [];
 let entities = [];
 let level, isWall;
-/*loadJSON('./levels/level1.json', x => {
+/*loadTXT('./levels/level1.txt', x => {
     level = x.levelData
     isWall = level.map(x => x.map(tile => tile === '100'))
 })*/
@@ -39,13 +39,13 @@ let levelHeight, levelWidth;
 let block_size;
 
 
-function loadJSON(filePath, success, error) {
+function loadTXT(filePath, success, error) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 if (success)
-                    success(JSON.parse(xhr.responseText));
+                    success(xhr.responseText);
                 console.log('successfully loaded level')
             } else {
                 if (error)
@@ -60,11 +60,7 @@ function loadJSON(filePath, success, error) {
 function preload() {
     // levelImg = loadImage('images/level.png')
     // level = levelStr.split('\n').map(str => str.split(' '))
-    loadJSON('./levels/level1.json', x => {
-        level = x.levelData
-        isWall = level.map(x => x.map(tile => tile === '100'))
-        console.log(isWall);
-    })
+    loadTXT('./levels/level1.txt', load_level)
 }
 
 async function calc_block_size() {
@@ -89,17 +85,8 @@ async function setup() {
     console.log("createdCanvas");
     canvasDiv.appendChild(canvas);
     player1 = new Player();
-    console.log("setup");
-<<<<<<< HEAD
-    
-    //canvas.style.position = "relative";
-=======
     canvas.style.position = "relative";
->>>>>>> 3f45c27ad5854450500cf1afe26ebe11289ea7e3
     canvas.style('z-index', "-3");
-    for (let i = 0; i < 21; i++) {
-        pellets.push(new Pellet(i, 2))
-    }
 }
 
 async function windowResized() {
@@ -168,7 +155,6 @@ class BigPellet extends Pellet {
 }
 
 class Player {
-<<<<<<< HEAD
   constructor() {
     this.xblock = 10;
     this.yblock = 2;
@@ -199,37 +185,6 @@ class Player {
     };
     //return this;
   }
-=======
-    constructor() {
-        this.xblock = 10;
-        this.yblock = 2;
-        //this.xpx = this.xblock * block_size;
-        //this.ypx = this.yblock * block_size;
-        this.xspeed = 0;
-        this.yspeed = 0;
-
-        this.update = function () {
-            if (isWall[this.yblock + this.yspeed][this.xblock + this.xspeed]) {
-                this.xspeed = 0//0//this.x + this.xspeed*-0.1;
-                this.yspeed = 0//0//this.y + this.yspeed*-0.1;
-            } else {
-                this.xblock += this.xspeed;
-                this.yblock += this.yspeed;
-                //this.xblock = Math.floor(this.xpx/block_size + block_size/2);
-                //this.yblock = Math.floor(this.ypx/block_size + block_size/2);
-                //console.log(this.xblock, this.yblock);
-                //this.xpx = this.xpx + this.xspeed*0.1;
-                //this.ypx = this.ypx + this.yspeed*0.1;
-            }
-        };
-        this.show = function () {
-            fill('#f0d465');
-            rect(this.xblock * block_size, this.yblock * block_size, block_size, block_size);
-            //rect(this.xpx, this.ypx, block_size, block_size);
-        };
-        //return this;
-    }
->>>>>>> 3f45c27ad5854450500cf1afe26ebe11289ea7e3
 }
 
 function updateCommand(newCmd) {
