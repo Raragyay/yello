@@ -68,7 +68,6 @@ async function calc_block_size() {
             }, 1000)
         })
     }
-    console.log("Oh hey its loaded now")
     levelHeight = windowHeight / 2
     levelWidth = windowHeight / 2 / level.length * level[0].length
     block_size = levelHeight / level.length
