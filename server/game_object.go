@@ -23,6 +23,8 @@ const (
 	p4 tileType = "012" //inky
 	p5 tileType = "013" //clyde
 
+	//pelletWithP1 = "024"
+
 	wall tileType = "100"
 )
 
@@ -273,17 +275,17 @@ func yes() {
 }
 
 func loadAndParseMazeFile(mazeFileName string) [][]tileType {
-	err, rawMaze := loadMaze(mazeFileName)
+	rawMaze, err := loadMaze(mazeFileName)
 	if err != nil {
 		log.Println("failed to load maze:", err)
 		return nil
 	}
 	parsedMaze := make([][]tileType, len(rawMaze))
 	for i := 0; i < len(rawMaze); i++ {
-		split_row := strings.Split(rawMaze[i], " ")
-		parsedMaze[i] = make([]tileType, len(split_row))
-		for j := 0; j < len(split_row); j++ {
-			parsedMaze[i][j] = tileType(split_row[j])
+		splitRow := strings.Split(rawMaze[i], " ")
+		parsedMaze[i] = make([]tileType, len(splitRow))
+		for j := 0; j < len(splitRow); j++ {
+			parsedMaze[i][j] = tileType(splitRow[j])
 		}
 	}
 	return parsedMaze
