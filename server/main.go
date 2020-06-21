@@ -16,6 +16,18 @@ const (
 	hardDebugMode bool = true
 )
 
+//2 fields are for direct messages. 3 fields are for direct + variable pass
+var handledClientCalls = map[clientCallSpecification]clientMessageHandle{
+	clientCallSpecification{isDirectMessage: true, msgBase: "PONG QUEUE"}: queuePlayer,
+}
+
+type clientCallSpecification struct {
+	msgBase         string
+	isDirectMessage bool
+}
+
+type clientMessageHandle func(*playerRequest, string)
+
 //clientPlayer is a struct that holds all the pointers and information about the player as well as the connection. Some variables can be null depending on the state
 //the player is in. Thus, each concurrent operation is handled such that it is either the sub-operation of an operation that it knows will ensure the existence
 //of the variables it wants to use or it is said operation itself.
@@ -36,7 +48,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 		allowHeaders := "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization"
 
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:63342")
+		w.Header().Set("Access-Control-Allow-Origin", "*:*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, PUT, PATCH, GET, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -50,7 +62,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 func main() {
 
 	//handle
-	fs := http.FileServer(http.Dir("../client/pages"))
+	fs := http.FileServer(http.Dir("../client/render"))
 	http.Handle("/", fs)
 	http.HandleFunc("/ws", wsEndpoint)
 
@@ -153,6 +165,9 @@ func reader(conn *websocket.Conn) {
 	for p.valid && serverActive {
 		// read in a message
 		messageType, data, err := conn.ReadMessage()
+		if !p.valid || !serverActive {
+			return
+		}
 		p.m.RLock()
 		if err != nil {
 			p.m.RUnlock()
@@ -167,16 +182,26 @@ func reader(conn *websocket.Conn) {
 
 		if flag == ok {
 			//2 fields message!
+			dataString := string(data)
+			specification := clientCallSpecification{
+				isDirectMessage: true,
+				msgBase:         dataString,
+			}
+			if val, ok := handledClientCalls[specification]; ok {
+				val(&playerRequest{message: dataString, p: p}, "")
+			} else {
+				p.m.RUnlock()
+				p.writeChanneledMessage("PONG INVALID")
+				handleDisconnectPlayer(p)
+				panic("PONG INVALID DIRECT MESSAGE: " + string(data))
+			}
 		} else if flag == notPONG || fields == nil {
 			//GET OUTTA HERE YOU NO PLAY PONG YOU MONSTER YOU GET OUT AAA
 			p.m.RUnlock()
 			p.writeChanneledMessage("PONG INVALID")
 			handleDisconnectPlayer(p)
 			panic("PONG INVALID")
-		}
-
-		//another number of fields message!
-		if len(fields) == 3 { //can add more cases like this with more else if or can switch to switch if it becomes inefficient
+		} else if len(fields) == 3 { //this is for directive and argument
 
 		} else {
 			//invalid number of fields boi! GET OUTTA MY SERVER YE DEGENERATE
@@ -208,7 +233,6 @@ func handleDisconnectPlayer(p *clientPlayer) {
 
 //channelsListener ensures that the channels of a player is always functional, but only if the player is valid.
 func channelsListener(p *clientPlayer) {
-	conn := *p.conn
 	for p.valid && serverActive {
 		if !p.valid {
 			return
@@ -224,7 +248,7 @@ func channelsListener(p *clientPlayer) {
 			fmt.Println("disconnecting through channel: " + p.name)
 			writeMessage(p, []byte("PONG CLOSE"))
 			removeClient(p)
-			conn.Close()
+			p.conn.Close()
 			p.m.Unlock()
 			p = nil
 			return

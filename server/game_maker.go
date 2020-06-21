@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -18,6 +19,11 @@ const (
 
 var queuedPlayersChannel = make(chan *clientPlayer, 5) //channel to handle players joining queue
 var queuedPlayers = make([]*clientPlayer, 0, 20)       //slice to store all those who are looking for games.
+
+func queuePlayer(req *playerRequest, argument string) {
+	fmt.Println("player has queued up: " + req.p.name)
+	queuedPlayersChannel <- req.p
+}
 
 func queueSystem() {
 	for serverActive {
@@ -63,6 +69,7 @@ func handleQueuedPlayer(newPlayer *clientPlayer) {
 		queuedPlayers = queuedPlayers[5:]
 
 	} else {
+		fmt.Println("player", newPlayer.name, "joined queue and the queue now has at most", len(queuedPlayers), "players.")
 		defer recover()
 		for newPlayer.activeGame == nil && newPlayer.valid {
 			tendedPlayersMutex.RLock()
