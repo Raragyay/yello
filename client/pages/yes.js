@@ -1,7 +1,7 @@
 let socket = new WebSocket("ws://185.163.47.170:5000/ws");
 console.log("Attempting Connection...");
 
-socketOpen = false;
+var socketOpen = false;
 
 socket.onopen = () => {
     console.log("Successfully Connected");
@@ -33,6 +33,6 @@ function sendSocketMessage(msg){
 }
 
 function onSubmitName(){
-	name = document.getElementById("onQueueButton").textContent();
+	var name = document.getElementById("onQueueButton").textContent();
 	sendSocketMessage("PONG " + name);
 }
