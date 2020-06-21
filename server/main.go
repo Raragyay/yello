@@ -44,10 +44,9 @@ func main() {
 	http.Handle("/socket.io/", server)
 	fs := http.FileServer(http.Dir("../client/pages"))
 	http.Handle("/", fs)
-	http.Handle("/queue", fs)
 
 	//signify socket connections
-	server.OnConnect("/queue", handleQueueSockets)
+	server.OnConnect("/", handleQueueSockets)
 
 	log.Println("Serving at localhost:5000...")
 	log.Fatal(http.ListenAndServe(":5000", nil))
