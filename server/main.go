@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -17,7 +18,7 @@ const (
 
 //2 fields are for direct messages. 3 fields are for direct + variable pass
 var handledClientCalls = map[clientCallSpecification]clientMessageHandle{
-	clientCallSpecification{isDirectMessage: true, msgBase: "PONG QUEUE"}:      queuePlayer,
+	clientCallSpecification{isDirectMessage: true, msgBase: "PONG QUEUE"}:       queuePlayer,
 	clientCallSpecification{isDirectMessage: false, msgBase: "PONG UPDATE-DIR"}: playerUpdateDesiredDirection,
 }
 
@@ -62,7 +63,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 func main() {
 
 	//handle
-	fs := http.FileServer(http.Dir("../client/render"))
+	fs := http.FileServer(http.Dir("../client/pages"))
 	http.Handle("/", fs)
 	http.HandleFunc("/ws", wsEndpoint)
 
@@ -170,7 +171,7 @@ func reader(conn *websocket.Conn) {
 			return
 		}
 		p.m.RLock()
-        fmt.Println(p.name + ": " + string(data))
+		fmt.Println(p.name + ": " + string(data))
 		if err != nil {
 			p.m.RUnlock()
 			log.Println(err)
@@ -182,7 +183,7 @@ func reader(conn *websocket.Conn) {
 
 		fields, flag := parseUtilsAndSignal(string(data), 2) //is it 2 fields message?
 
-        fmt.Println("right before checking flag")
+		fmt.Println("right before checking flag")
 		if flag == ok {
 			//2 fields message!
 			dataString := fields[0] + " " + fields[1]
@@ -191,7 +192,7 @@ func reader(conn *websocket.Conn) {
 				msgBase:         dataString,
 			}
 			if val, ok := handledClientCalls[specification]; ok {
-			    fmt.Println("hey we're handling client calls now")
+				fmt.Println("hey we're handling client calls now")
 				val(&playerRequest{message: dataString, p: p}, "")
 			} else {
 				p.m.RUnlock()
@@ -206,13 +207,13 @@ func reader(conn *websocket.Conn) {
 			handleDisconnectPlayer(p)
 			panic("PONG INVALID")
 		} else if len(fields) == 3 { //this is for directive and argument
-		    fmt.Println("3 field messages was sent.")
+			fmt.Println("3 field messages was sent.")
 			dataString := fields[0] + " " + fields[1]
 			specification := clientCallSpecification{
 				isDirectMessage: false,
 				msgBase:         dataString,
 			}
-			val, ok := handledClientCalls[specification];
+			val, ok := handledClientCalls[specification]
 			fmt.Println(ok)
 			if ok {
 				val(&playerRequest{message: dataString, p: p}, fields[2])
