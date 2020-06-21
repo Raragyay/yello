@@ -2,12 +2,13 @@ import React from 'react';
 // import logo from './logo.svg';
 import './App.css';
 import Pacman from "./components/Pacman";
+import LevelCanvas from "./components/LevelCanvas";
 
 function App() {
 
     return (
-        <div style={{width: 100, height: 100}}>
-            <Pacman/>
+        <div>
+            <LevelCanvas/>
         </div>
         // <div className="App">
         //   <header className="App-header">
