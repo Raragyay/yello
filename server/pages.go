@@ -17,7 +17,6 @@ func serveHandleQueue(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	log.Println(req.RemoteAddr + " sent queue-up request with name: " + name)
-	http.ServeFile(w, req, "../client/pages/queueyes.js")
 	http.ServeFile(w, req, "../client/pages/queue.html")
 }
 
