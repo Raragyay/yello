@@ -3,9 +3,11 @@
 let levelImg;
 let pellets = [];
 let entities = [];
-let level;
-loadJSON('./levels/level1.json', x => level = x)
-
+let level, isWall;
+loadJSON('./levels/level1.json', x => {
+    level = x
+    isWall = level.map(x => x.map(tile => tile === '100'))
+})
 let levelHeight, levelWidth;
 let block_size;
 
@@ -30,7 +32,7 @@ function preload() {
     levelImg = loadImage('images/level.png')
     // level = levelStr.split('\n').map(str => str.split(' '))
     // print(data)
-    print(level)
+    // print(isWall)
 }
 
 function calc_block_size() {
@@ -56,8 +58,17 @@ function draw() {
     noStroke()
     for (let i = 0; i < 25; i++) {
         for (let j = 0; j < 21; j++) {
-            if (level[i][j] === '100') {
-                rect(j * block_size, i * block_size, block_size, block_size)
+            if (isWall[i][j]) {
+                let border_checks = []
+                border_checks[0] = (j > 0 && isWall[i][j - 1])
+                border_checks[1] = (i > 0 && isWall[i - 1][j])
+                border_checks[2] = (j < 21 - 1 && isWall[i][j + 1])
+                border_checks[3] = (i < 25 - 1 && isWall[i + 1][j])
+                let corner_checks = []
+                for (let k = 0; k < 4; k++) {
+                    corner_checks[k] = !((border_checks[k] || border_checks[(k + 1) % 4])) * 10
+                }
+                rect(j * block_size, i * block_size, block_size, block_size, ...corner_checks)
             }
         }
     }
