@@ -67,6 +67,8 @@ socket.onmessage = (msg) => {
             player1.xblock = parseInt(split_data[1])
             player1.yblock = parseInt(split_data[2])
         }
+    } else if (data.startsWith("PONG GAME-PELLET-HOM")) {
+        //TODO CONSUME PELLET
     }
     console.log("Server: " + msg.data);
 }

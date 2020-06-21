@@ -54,7 +54,6 @@ func loadMaze(file string) ([]string, error) {
 		maze = append(maze, line)
 	}
 	return maze, nil
-	//TODO parse into enum
 }
 
 // func readInput() (string, error) { //make so that

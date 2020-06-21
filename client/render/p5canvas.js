@@ -31,12 +31,10 @@ let cmdToWord = {
 let pellets = [];
 let entities = [];
 let level, isWall;
-/*loadTXT('./levels/level1.txt', x => {
-    level = x.levelData
-    isWall = level.map(x => x.map(tile => tile === '100'))
-})*/
 let levelHeight, levelWidth;
 let block_size;
+
+entities.push(new Entity())
 
 
 function loadTXT(filePath, success, error) {
@@ -57,42 +55,54 @@ function loadTXT(filePath, success, error) {
     xhr.send();
 }
 
+let player_image, blinky_image, inky_image, pinky_image, clyde_image
+
 function preload() {
-    // levelImg = loadImage('images/level.png')
-    // level = levelStr.split('\n').map(str => str.split(' '))
-    loadTXT('./levels/level1.txt', load_level)
+    loadTXT('./levels/level2.txt', load_level)
+    player_image = loadImage('images/player_image.png')
+    blinky_image = loadImage('images/blinky_image.png')
+    inky_image = loadImage('images/inky_image.png')
+    pinky_image = loadImage('images/pinky_image.png')
+    clyde_image = loadImage('images/clyde_image.png')
 }
 
-async function calc_block_size() {
-    while (level === undefined) {
-        await new Promise(resolve => {
-            setTimeout(function () {
-                resolve();
-            }, 1000)
-        })
-    }
-    levelHeight = windowHeight / 2
-    levelWidth = windowHeight / 2 / level.length * level[0].length
-    block_size = levelHeight / level.length
-    //console.log('bscalced')
-    return;
+const waitForLevelToBeDefined = () => {
+    return new Promise((resolve) => {
+        if (level === undefined) {
+            return setTimeout(() => resolve(waitForLevelToBeDefined), 1000);
+        } else {
+            return resolve()
+        }
+    })
 }
+
+function calc_block_size(cb = function () {
+}) {
+    waitForLevelToBeDefined().then(() => {
+        levelHeight = windowHeight / 2
+        levelWidth = windowHeight / 2 / level.length * level[0].length
+        block_size = levelHeight / level.length
+        //console.log('bscalced')
+    }).then(cb);
+}
+
 
 async function setup() {
-    await calc_block_size();
-    canvas = createCanvas(levelWidth, levelHeight);
-    canvas.center();
-    console.log("createdCanvas");
-    canvasDiv.appendChild(canvas);
-    player1 = new Player();
-    canvas.style.position = "relative";
-    canvas.style('z-index', "-3");
+    calc_block_size(() => {
+        canvas = createCanvas(levelWidth, levelHeight);
+        console.log("createdCanvas");
+        canvas.parent('canvas-div')
+        canvas.center();
+        canvas.style.position = "relative";
+        canvas.style('z-index', "-3");
+    });
 }
 
 async function windowResized() {
-    await calc_block_size();
-    resizeCanvas(levelWidth, levelHeight);
-    canvas.center();
+    calc_block_size(() => {
+        resizeCanvas(levelWidth, levelHeight);
+        canvas.center();
+    });
     //console.log("windowresized");
 }
 
@@ -124,7 +134,10 @@ function drawLevel() {
 
 function draw() {
     clear();
-    if (!gameActive) {
+    // if (!gameActive) {
+    //     return
+    // }
+    if (level === undefined || player1 === undefined) {
         return
     }
     drawLevel();
@@ -154,38 +167,40 @@ class BigPellet extends Pellet {
     }
 }
 
-class Player {
-  constructor() {
-    this.xblock = 10;
-    this.yblock = 2;
-    //this.xpx = this.xblock * block_size;
-    //this.ypx = this.yblock * block_size;
-    this.xspeed = 0;
-    this.yspeed = 0;
+class Entity {
+    constructor(sprite) {
+        this.sprite=sprite
+        this.xblock = 10;
+        this.yblock = 2;
+        //this.xpx = this.xblock * block_size;
+        //this.ypx = this.yblock * block_size;
+        this.xspeed = 0;
+        this.yspeed = 0;
 
-    this.update = function () {
-      if (isWall[this.yblock + this.yspeed][this.xblock + this.xspeed]) {
-        this.xspeed = 0//0//this.x + this.xspeed*-0.1;
-        this.yspeed = 0//0//this.y + this.yspeed*-0.1;
-      }
-      else {
-        this.xblock += this.xspeed;
-        this.yblock += this.yspeed;
-        //this.xblock = Math.floor(this.xpx/block_size + block_size/2);
-        //this.yblock = Math.floor(this.ypx/block_size + block_size/2);
-        //console.log(this.xblock, this.yblock);
-        //this.xpx = this.xpx + this.xspeed*0.1;
-        //this.ypx = this.ypx + this.yspeed*0.1;
-      }
-    };
-    this.show = function () {
-      fill('#f0d465');
-      rect(this.xblock*block_size, this.yblock*block_size, block_size, block_size);
-      //rect(this.xpx, this.ypx, block_size, block_size);
-    };
-    //return this;
-  }
+        this.update = function () {
+            if (isWall[this.yblock + this.yspeed][this.xblock + this.xspeed]) {
+                this.xspeed = 0
+                this.yspeed = 0
+            } else {
+                this.xblock += this.xspeed;
+                this.yblock += this.yspeed;
+            }
+        };
+        this.show = function () {
+            fill('#f0d465');
+            rect(this.xblock * block_size, this.yblock * block_size, block_size, block_size);
+            //rect(this.xpx, this.ypx, block_size, block_size);
+        };
+        //return this;
+    }
 }
+
+class Player extends Entity {
+    constructor(sprite) {
+        super(sprite);
+    }
+}
+
 
 function updateCommand(newCmd) {
     console.log("newcmd");
