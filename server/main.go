@@ -21,6 +21,7 @@ type clientPlayer struct {
 	conn        *websocket.Conn
 	name        string
 	messageType int
+	activegame  *game
 }
 
 func corsMiddleware(next http.Handler) http.Handler {
@@ -48,7 +49,11 @@ func main() {
 
 	//server
 	log.Println("Serving at localhost:5000...")
+	serverActive = true
+	go queueSystem() //initialize the queue system that shall perpetually listen and listen for more and more players. This is its punishment for being a thread
 	log.Fatal(http.ListenAndServe(":5000", nil))
+
+	serverActive = false
 }
 
 //socket stuff
