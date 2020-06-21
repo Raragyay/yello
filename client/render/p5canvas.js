@@ -46,9 +46,9 @@ function calc_block_size() {
 
 function setup() {
     calc_block_size();
-    var canvas=createCanvas(levelWidth, levelHeight);
+    var canvas = createCanvas(levelWidth, levelHeight);
     // canvas.parent('sketch-div')
-    player1 = new Pacman();
+    player1 = Pacman();
 }
 
 function windowResized() {
@@ -86,53 +86,53 @@ function draw() {
 }
 
 
-function Pacman(){
+function Pacman() {
     this.x = 0;
     this.y = 0;
     this.xspeed = 1;
     this.yspeed = 0;
 
-    this.update = function() {
+    this.update = function () {
 
-      if (isWall[this.x + this.xspeed][this.y + this.yspeed]){
-        this.xspeed = 0;
-        this.yspeed = 0;
-      }
-      else{
-        this.x = this.x + this.xspeed;
-        this.y = this.y + this.yspeed;
-      }
+        if (isWall[this.x + this.xspeed][this.y + this.yspeed]) {
+            this.xspeed = 0;
+            this.yspeed = 0;
+        } else {
+            this.x = this.x + this.xspeed;
+            this.y = this.y + this.yspeed;
+        }
 
-    this.show = function() {
-      fill(0);
-      rect(this.x, this.y, 100, 100);
+        this.show = function () {
+            fill(0);
+            rect(this.x, this.y, 100, 100);
+        }
     }
-    }
-  }
+    return this;
+}
 
-function updateCommand(newCmd){
+function updateCommand(newCmd) {
     command = newCmd;
-    switch(newCmd){
-      case 'up':
-        player1.xspeed = 0;
-        player1.yspeed = -1;
-        break;
-      case 'down':
-        player1.xspeed = 0;
-        player1.yspeed = 1;
-        break;
-      case 'left':
-        player1.xspeed = -1;
-        player1.yspeed = 0;
-      case 'right':
-        player1.xspeed = 1;
-        player1.yspeed = 0;
+    switch (newCmd) {
+        case 'up':
+            player1.xspeed = 0;
+            player1.yspeed = -1;
+            break;
+        case 'down':
+            player1.xspeed = 0;
+            player1.yspeed = 1;
+            break;
+        case 'left':
+            player1.xspeed = -1;
+            player1.yspeed = 0;
+        case 'right':
+            player1.xspeed = 1;
+            player1.yspeed = 0;
     }
-  }
+}
 
-  // Initialize a sound classifier method with SpeechCommands18w model.
+// Initialize a sound classifier method with SpeechCommands18w model.
 let classifier;
-const options = { probabilityThreshold: 0.8 };
+const options = {probabilityThreshold: 0.8};
 // Two variables to hold the label and confidence of the result
 let label;
 let confidence;
@@ -148,32 +148,32 @@ let wordToCmd = {};
 };*/
 
 let cmdToWord = {
-  left: 'red',
-  up: 'yellow',
-  right: 'green',
-  down: 'blue'
+    left: 'red',
+    up: 'yellow',
+    right: 'green',
+    down: 'blue'
 }
 
 
 async function setupstt() {
-  classifier = await ml5.soundClassifier(
-    "https://storage.googleapis.com/tm-model/RoRt49x-Z/model.json",
-    options
-  );
+    classifier = await ml5.soundClassifier(
+        "https://storage.googleapis.com/tm-model/RoRt49x-Z/model.json",
+        options
+    );
 
-  updateDicts('red', 'yellow', 'green', 'blue');
+    updateDicts('red', 'yellow', 'green', 'blue');
 
-  // Create 'label' and 'confidence' div to hold results,, delete eventually
+    // Create 'label' and 'confidence' div to hold results,, delete eventually
 
-  label = document.createElement("DIV");
-  label.textContent = "label ...";
-  confidence = document.createElement("DIV");
-  confidence.textContent = "Confidence ...";
+    label = document.createElement("DIV");
+    label.textContent = "label ...";
+    confidence = document.createElement("DIV");
+    confidence.textContent = "Confidence ...";
 
-  document.body.appendChild(label);
-  document.body.appendChild(confidence);
-  // Classify the sound from microphone in real time
-  classifier.classify(gotResult);
+    document.body.appendChild(label);
+    document.body.appendChild(confidence);
+    // Classify the sound from microphone in real time
+    classifier.classify(gotResult);
 
 }
 
@@ -182,31 +182,29 @@ console.log("ml5 version:", ml5.version);
 
 // A function to run when we get any errors and the results
 function gotResult(error, results) {
-  // for debug
-  if (error) {
-    console.error(error);
-  }
+    // for debug
+    if (error) {
+        console.error(error);
+    }
 
-  let wordIn = results[0].label;
-  label.textContent = "Label: " + wordIn;
-  confidence.textContent = "Confidence: " + results[0].confidence.toFixed(4);
+    let wordIn = results[0].label;
+    label.textContent = "Label: " + wordIn;
+    confidence.textContent = "Confidence: " + results[0].confidence.toFixed(4);
 
-  updateCommand(wordToCmd[wordIn]);
+    updateCommand(wordToCmd[wordIn]);
 }
 
 
+function updateDicts(newLeft, newUp, newDown, newRight) {
+    cmdToWord.left = newLeft;
+    cmdToWord.up = newUp;
+    cmdToWord.right = newRight;
+    cmdToWord.down = newDown;
 
-
-function updateDicts(newLeft, newUp, newDown, newRight){
-  cmdToWord.left = newLeft;
-  cmdToWord.up = newUp;
-  cmdToWord.right = newRight;
-  cmdToWord.down = newDown;
-
-  //update reverse dict
-  for(var key in cmdToWord) {
-    if(cmdToWord.hasOwnProperty(key)){
-      wordToCmd[cmdToWord[key]] = key;
+    //update reverse dict
+    for (var key in cmdToWord) {
+        if (cmdToWord.hasOwnProperty(key)) {
+            wordToCmd[cmdToWord[key]] = key;
+        }
     }
-  }
 }
