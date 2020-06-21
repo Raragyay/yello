@@ -1,7 +1,7 @@
 //import {background, createCanvas, loadImage, windowHeight, windowWidth} from "p5/global";
 // Initialize a sound classifier method with SpeechCommands18w model.
 let classifier;
-const options = {probabilityThreshold: 0.8};
+const options = {probabilityThreshold: 0.75};
 // Two variables to hold the label and confidence of the result
 let label;
 let confidence;
@@ -27,10 +27,10 @@ let cmdToWord = {
 let pellets = [];
 let entities = [];
 let level, isWall;
-loadJSON('./levels/level1.json', x => {
+/*loadJSON('./levels/level1.json', x => {
     level = x.levelData
     isWall = level.map(x => x.map(tile => tile === '100'))
-})
+})*/
 let levelHeight, levelWidth;
 let block_size;
 
@@ -42,7 +42,7 @@ function loadJSON(filePath, success, error) {
             if (xhr.status === 200) {
                 if (success)
                     success(JSON.parse(xhr.responseText));
-                    console.log('success')
+                console.log('successfully loaded level')
             } else {
                 if (error)
                     error(xhr);
@@ -56,8 +56,10 @@ function loadJSON(filePath, success, error) {
 function preload() {
     // levelImg = loadImage('images/level.png')
     // level = levelStr.split('\n').map(str => str.split(' '))
-    // print(data)
-    // print(isWall)
+    loadJSON('./levels/level1.json', x => {
+      level = x.levelData
+      isWall = level.map(x => x.map(tile => tile === '100'))
+  })
 }
 
 async function calc_block_size() {
@@ -71,11 +73,14 @@ async function calc_block_size() {
     levelHeight = windowHeight / 2
     levelWidth = windowHeight / 2 / level.length * level[0].length
     block_size = levelHeight / level.length
+    //console.log('bscalced')
+    return;
 }
 
 async function setup() {
     await calc_block_size();
     var canvas = createCanvas(levelWidth, levelHeight);
+    canvas.center();
     console.log("createdCanvas");
     // canvas.parent('sketch-div')
     player1 = new Pacman();
@@ -85,13 +90,13 @@ async function setup() {
 async function windowResized() {
     await calc_block_size();
     resizeCanvas(levelWidth, levelHeight);
-    console.log("alksjdlakjds");
+    //console.log("windowresized");
 }
 
 
 function drawLevel() {
-  console.log("drewLevel");  
-  fill(255, 204, 0)
+
+    fill('#F8E587')
     noStroke()
     for (let i = 0; i < isWall.length; i++) {
         for (let j = 0; j < isWall[0].length; j++) {
@@ -109,10 +114,11 @@ function drawLevel() {
             }
         }
     }
+   // console.log("drewLevel");
 }
 
 function draw() {
-    background(255);
+    background('#4C48CA');
     drawLevel();
     player1.update();
     player1.show();
@@ -120,33 +126,33 @@ function draw() {
 
 
 class Pacman {
-  constructor() {
-    this.x = 5;
-    this.y = 5;
-    this.xspeed = 1;
-    this.yspeed = 0;
-
-    this.update = function () {
-
-      if (isWall[this.x + this.xspeed][this.y + this.yspeed]) {
-        this.xspeed = 0;
+    constructor() {
+        this.x = 5;
+        this.y = 5;
+        this.xspeed = 1;
         this.yspeed = 0;
-      }
-      else {
-        this.x = this.x + this.xspeed;
-        this.y = this.y + this.yspeed;
-      }
-    };
-    this.show = function () {
-      fill(0);
-      rect(this.x*block_size, this.y*block_size, block_size, block_size);
-    };
-    //return this;
-  }
+
+        this.update = function () {
+
+            if (isWall[this.y + this.yspeed][this.x + this.xspeed]) {
+                console.log('set to 0')
+                this.xspeed = 0;
+                this.yspeed = 0;
+            } else {
+                this.x = this.x + this.xspeed*.1;
+                this.y = this.y + this.yspeed*.1;
+            }
+        };
+        this.show = function () {
+            fill(0);
+            rect(this.x * block_size, this.y * block_size, block_size, block_size);
+        };
+        //return this;
+    }
 }
 
 function updateCommand(newCmd) {
-  console.log("newcmd");
+    console.log("newcmd");
     command = newCmd;
     switch (newCmd) {
         case 'up':
@@ -160,9 +166,13 @@ function updateCommand(newCmd) {
         case 'left':
             player1.xspeed = -1;
             player1.yspeed = 0;
+            break;
         case 'right':
             player1.xspeed = 1;
             player1.yspeed = 0;
+            break;
+        default:
+            break;
     }
 }
 
