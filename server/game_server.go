@@ -18,7 +18,6 @@ const (
 type playerGameData struct { //TODO LOAD GAME DATA
 	p               *clientPlayer
 	latestDirection direction
-	mazeP           *player
 }
 
 func initializeGameServer(p1, p2 *clientPlayer) {
