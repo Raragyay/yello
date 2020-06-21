@@ -67,7 +67,7 @@ func handleQueuedPlayer(newPlayer *clientPlayer) {
 		for newPlayer.activeGame == nil && newPlayer.valid {
 			tendedPlayersMutex.RLock()
 			newPlayer.writeChannel <- &writeRequest{
-				message: "PONG QUEUE " + strconv.Itoa(tendedPlayers.Len()) + "\n",
+				message: "MD QUEUE " + strconv.Itoa(tendedPlayers.Len()) + "\n",
 			}
 			tendedPlayersMutex.RUnlock()
 			time.Sleep(queueMessageSendCooldown)
