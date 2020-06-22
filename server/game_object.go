@@ -248,7 +248,7 @@ func playerIDToTile(id string) tile {
 }
 
 func (t tile) isPacHom() bool {
-	return pellet+p1 == t
+	return pellet+p1 == t || superPellet|p1 == t
 }
 
 func (t tile) isPacGhostCollide() bool {
