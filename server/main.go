@@ -64,7 +64,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 func main() {
 
 	//handle
-	fs := http.FileServer(http.Dir("../client/pages"))
+	fs := http.FileServer(http.Dir("../client/render"))
 	http.Handle("/", fs)
 	http.HandleFunc("/ws", wsEndpoint)
 
