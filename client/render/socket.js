@@ -62,16 +62,16 @@ function updatePositionOfEntity(data) {
     let split_data = data.split(' ')[2].split('-');
     let x = parseInt(split_data[1])
     let y = parseInt(split_data[2])
-    if (split_data[0] === 'p1') {
+    if (split_data[0] === 'P1') {
         //VECTOR TOSTRING SYNTAX WILL HAVE TO BE GIVEN. CURRENTLY ASSUME IT IS GIVEN AS {X}-{Y}
         pacman.setPosition(x, y)
-    } else if (split_data[0] === 'p2') {
+    } else if (split_data[0] === 'P2') {
         blinky.setPosition(x, y)
-    } else if (split_data[0] === 'p3') {
+    } else if (split_data[0] === 'P3') {
         inky.setPosition(x, y)
-    } else if (split_data[0] === 'p4') {
+    } else if (split_data[0] === 'P4') {
         pinky.setPosition(x, y)
-    } else if (split_data[0] === 'p5') {
+    } else if (split_data[0] === 'P5') {
         clyde.setPosition(x, y)
     }
 }
@@ -85,10 +85,13 @@ function nullifyPellet(data) {
     }
 }
 
+isQueueing = false
+
 socket.onmessage = (msg) => {
     let data = msg.data;
     if (data.startsWith("PONG QUEUE")) {
         document.getElementById("queue").innerText = data.split(" ")[2]
+        isQueueing = true
     } else if (data.startsWith("PONG GAME-INIT")) {
         //TODO take names of other players
         document.getElementById("mainui-play").style.display = 'none'
@@ -109,6 +112,9 @@ socket.onmessage = (msg) => {
 }
 
 document.getElementById("play").addEventListener("click", () => {
+    if (isQueueing) {
+        return
+    }
     let name = document.getElementById("nick").value;
     sendSocketMessage("PONG " + name)
     sendSocketMessage("PONG QUEUE")

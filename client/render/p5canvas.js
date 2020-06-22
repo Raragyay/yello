@@ -141,15 +141,17 @@ function drawLevel() {
 
 function draw() {
     clear();
-    // if (!gameActive) {
-    //     return
-    // }
+    if (!gameActive) {
+        return
+    }
     if (level === undefined || pacman === undefined) {
         return
     }
     drawLevel();
-    pacman.update();
-    pacman.show();
+    entities.forEach((entity) => {
+        entity.update()
+        entity.show()
+    })
 }
 
 
