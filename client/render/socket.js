@@ -39,6 +39,16 @@ function load_level(levelData) {
                 pellets.push(new Pellet(j, i))
             } else if (split_level_data[idx] === '003') {
                 pellets.push(new BigPellet(j, i))
+            } else if (split_level_data[idx] === '010') {
+                blinky.setPosition(j, i)
+            } else if (split_level_data[idx] === '011') {
+                pinky.setPosition(j, i)
+            } else if (split_level_data[idx] === '012') {
+                inky.setPosition(j, i)
+            } else if (split_level_data[idx] === '013') {
+                clyde.setPosition(j, i)
+            } else if (split_level_data[idx] === '004') {
+                pacman.setPosition(j, i)
             }
             idx++
         }
@@ -54,7 +64,7 @@ function updatePositionOfEntity(data) {
     let y = parseInt(split_data[2])
     if (split_data[0] === 'p1') {
         //VECTOR TOSTRING SYNTAX WILL HAVE TO BE GIVEN. CURRENTLY ASSUME IT IS GIVEN AS {X}-{Y}
-        player.setPosition(x, y)
+        pacman.setPosition(x, y)
     } else if (split_data[0] === 'p2') {
         blinky.setPosition(x, y)
     } else if (split_data[0] === 'p3') {
@@ -91,6 +101,9 @@ socket.onmessage = (msg) => {
         updatePositionOfEntity(data);
     } else if (data.startsWith("PONG GAME-PELLET-HOM")) {
         nullifyPellet(data);
+    } else if (data.startsWith("PONG GAME-SCARED")) {
+        //TODO change to reflect actual variable name
+        isScared = data.split(' ')[2] === '1'
     }
     console.log("Server: " + msg.data);
 }
