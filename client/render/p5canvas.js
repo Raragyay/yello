@@ -195,8 +195,8 @@ class Entity {
     }
 
     setPosition(x, y) {
-        this.x = x
-        this.y = y
+        this.xblock = x
+        this.yblock = y
     }
 }
 
@@ -263,10 +263,6 @@ async function setupstt() {
     classifier.classify(gotResult);
 
 }
-
-
-console.log("ml5 versijlaflaon:", ml5.version);
-
 // A function to run when we get any errors and the results
 function gotResult(error, results) {
     // for debug
@@ -302,7 +298,6 @@ setupstt();
 document.onkeydown = checkKey;
 
 function checkKey(e) {
-
     e = e || window.event;
     if (e.keyCode == '38') {
         // up arrow
@@ -317,5 +312,4 @@ function checkKey(e) {
         // right arrow
         updateCommand('right');
     }
-
 }
