@@ -19,8 +19,7 @@ const (
 
 type playerGameData struct { //TODO LOAD GAME DATA
 	p                  *clientPlayer
-	x                  int
-	y                  int
+	position           posVector
 	latestDirection    direction
 	tileRepresentation tile
 }
@@ -35,6 +34,14 @@ type game struct {
 
 func initializeGameServer(p1, p2 *clientPlayer) {
 
+	gameInstance := &game{
+		p1: &playerGameData{p: p1},
+		p2: &playerGameData{p: p2},
+		//p3:     &playerGameData{p: p3},
+		//p4:     &playerGameData{p: p4},
+		//p5:     &playerGameData{p: p5},
+		active: true,
+	}
 	//handle maze
 	maze, numRows := loadAndParseMazeFile(*mazeFile)
 
@@ -50,15 +57,6 @@ func initializeGameServer(p1, p2 *clientPlayer) {
 		for _, el := range val {
 			fmt.Fprintf(&mazeMsg, "-%s", string(el))
 		}
-	}
-
-	gameInstance := &game{
-		p1: &playerGameData{p: p1},
-		p2: &playerGameData{p: p2},
-		//p3:     &playerGameData{p: p3},
-		//p4:     &playerGameData{p: p4},
-		//p5:     &playerGameData{p: p5},
-		active: true,
 	}
 
 	//now construct bit maze for us yes
@@ -94,8 +92,8 @@ func tendGame(g *game) {
 	for g.active {
 		//move players
 		for _, player := range []*playerGameData{
-			g.p1, g.p2} {
-			projX, projY := player.x, player.y
+			g.p1, g.p2} { //TODO add more players to iterate over
+			projX, projY := player.position.x, player.position.y
 			if player.latestDirection == "R" {
 				projX += 1
 			}
