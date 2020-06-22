@@ -7,10 +7,10 @@ import (
 )
 
 type game struct {
-	p1, p2 *playerGameData
-	active bool
-	maze   [][]tile
-	pacLives int
+	p1, p2      *playerGameData
+	active      bool
+	maze        [][]tile
+	pacLives    int
 	pelletsLeft int
 }
 
@@ -26,6 +26,10 @@ var queuedPlayersChannel = make(chan *clientPlayer, 5) //channel to handle playe
 var queuedPlayers = make([]*clientPlayer, 0, 20)       //slice to store all those who are looking for games.
 
 func queuePlayer(req *playerRequest, argument string) {
+	if req.p.queued {
+		fmt.Println("player has tried to queue up but he is already queued up: " + req.p.name)
+		return
+	}
 	fmt.Println("player has queued up: " + req.p.name)
 	queuedPlayersChannel <- req.p
 }
@@ -47,6 +51,7 @@ func queueSystem() {
 }
 
 func handleQueuedPlayer(newPlayer *clientPlayer) {
+	newPlayer.queued = true
 	queuedPlayers = append(queuedPlayers, newPlayer)
 	if len(queuedPlayers) >= playersInEachGame {
 		//if inside here, the last player added completes the lobby. but we must check whether other players are still valid..
@@ -63,7 +68,10 @@ func handleQueuedPlayer(newPlayer *clientPlayer) {
 	if len(queuedPlayers) >= playersInEachGame {
 
 		go initializeGameServer(queuedPlayers[0], queuedPlayers[1]) //add others later
-		queuedPlayers = queuedPlayers[playersInEachGame:]           //TODO SLICE LENGTH ISSUE
+		for i := 0; i < playersInEachGame; i++ {
+			queuedPlayers[i].queued = false
+		}
+		queuedPlayers = queuedPlayers[playersInEachGame:] //TODO SLICE LENGTH ISSUE
 
 	} else {
 		fmt.Println("player", newPlayer.name, "joined queue and the queue now has at most", len(queuedPlayers), "players.")
