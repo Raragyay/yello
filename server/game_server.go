@@ -238,20 +238,20 @@ func (g *game) updatePlayerPositions() {
 		for y := 0; y < len(g.maze[x]); y++ {
 			switch g.maze[x][y] {
 			case p1:
-				g.p1.position = posVector{x: x, y: y}
+				g.p1.position = &posVector{x: x, y: y}
 				break
 			case p2:
-				g.p2.position = posVector{x: x, y: y}
+				g.p2.position = &posVector{x: x, y: y}
 				break
-			case p3:
-				g.p3.position = posVector{x: x, y: y}
-				break
-			case p4:
-				g.p4.position = posVector{x: x, y: y}
-				break
-			case p5:
-				g.p5.position = posVector{x: x, y: y}
-				break
+				//case p3:
+				//	g.p3.position = &posVector{x: x, y: y}
+				//	break
+				//case p4:
+				//	g.p4.position = &posVector{x: x, y: y}
+				//	break
+				//case p5:
+				//	g.p5.position = &posVector{x: x, y: y}
+				//	break
 			}
 		}
 	}
@@ -260,7 +260,7 @@ func (g *game) updatePlayerPositions() {
 func (g *game) updateTileReferences() {
 	g.p1.tileRepresentation = p1
 	g.p2.tileRepresentation = p2
-	g.p3.tileRepresentation = p3
-	g.p4.tileRepresentation = p4
-	g.p5.tileRepresentation = p5
+	//g.p3.tileRepresentation = p3
+	//g.p4.tileRepresentation = p4
+	//g.p5.tileRepresentation = p5
 }
