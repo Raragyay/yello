@@ -158,6 +158,7 @@ func consumePellet(g *game, v *posVector) {
 }
 
 func killGhosts(g *game, entityList []*playerGameData) {
+	fmt.Println(entityList)
 	for _, entity := range entityList {
 		fmt.Printf("Entity at %s is killed", entity.position.toString())
 		if entity.tileRepresentation != p1 {
@@ -280,10 +281,10 @@ func constructBitMaze(sMaze [][]string) [][]tile {
 	for row := 0; row < len(sMaze); row++ {
 		tileMaze[row] = make([]tile, len(sMaze[row]))
 		for col := 0; col < len(sMaze[row]); col++ {
-			tileMaze[row][col] = (tileToBit(sMaze[row][col]))
+			tileMaze[row][col] = tileToBit(sMaze[row][col])
 		}
 	}
-	return (tileMaze)
+	return tileMaze
 }
 
 func pickPlayerGameData(g *game, p *clientPlayer) *playerGameData {
@@ -372,6 +373,7 @@ func (g *game) getPlayerByID(id string) *playerGameData {
 
 func getPlayersOnTile(g *game, t tile) []*playerGameData {
 	players := t.getPlayerIDs()
+	fmt.Println(players)
 	returned := make([]*playerGameData, 0)
 	for _, val := range players {
 		returned = append(returned, g.getPlayerByID(val))
