@@ -9,6 +9,7 @@ let command;
 let player1;
 let canvas;
 let gameActive = false;
+let isScared = false;
 
 var canvasDiv = document.getElementById('canvas-div')
 
@@ -86,7 +87,7 @@ function calc_block_size(cb = function () {
 
 
 async function setup() {
-    player1=new Player(player_image)
+    player1 = new Player(player_image)
     calc_block_size(() => {
         canvas = createCanvas(levelWidth, levelHeight);
         console.log("createdCanvas");
