@@ -211,7 +211,7 @@ func loadAndParseMazeFile(mazeFileName string) ([][]string, int) {
 //UTILS
 
 func (t tile) isIllegalCollision() bool {
-	return (!(uint8(t) > uint8(wall)))
+	return (uint8(t) > uint8(wall))
 }
 
 func (t tile) getPlayerID() []string {
@@ -248,7 +248,7 @@ func playerIDToTile(id string) tile {
 }
 
 func (t tile) isPacHom() bool {
-	return pellet+p1 == t
+	return pellet+p1 == t || superPellet|p1 == t
 }
 
 func (t tile) isPacGhostCollide() bool {
