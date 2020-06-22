@@ -280,11 +280,17 @@ func (g *game) updatePlayerPositions() {
 }
 
 func (g *game) setPlayerStartingPositionsToCurrent() {
-	g.p1.startingPosition = g.p1.position
-	g.p2.startingPosition = g.p2.position
-	//g.p3.startingPosition = g.p3.position
-	//g.p4.startingPosition = g.p4.position
-	//g.p5.startingPosition = g.p5.position
+	g.p1.startingPosition = &posVector{}
+	g.p2.startingPosition = &posVector{}
+	// g.p3.startingPosition = &posVector{}
+	// g.p4.startingPosition = &posVector{}
+	// g.p5.startingPosition = &posVector{}
+
+	*g.p1.startingPosition = *g.p1.position
+	*g.p2.startingPosition = *g.p2.position
+	//*g.p3.startingPosition = *g.p3.position
+	//*g.p4.startingPosition = *g.p4.position
+	//*g.p5.startingPosition = *g.p5.position
 }
 
 func (g *game) updatePelletCounts() {
