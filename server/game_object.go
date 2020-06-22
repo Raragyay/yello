@@ -94,16 +94,19 @@ func (t tile) isIllegalCollision() bool {
 
 func (t tile) getPlayerIDs() []string {
 	returned := make([]string, 0)
-	switch t {
-	case p1 & t:
+	if t == p1&t {
 		returned = append(returned, "P1")
-	case p2 & t:
+	}
+	if t == p2&t {
 		returned = append(returned, "P2")
-	case p3 & t:
+	}
+	if t == p3&t {
 		returned = append(returned, "P3")
-	case p4 & t:
+	}
+	if t == p4&t {
 		returned = append(returned, "P4")
-	case p5 & t:
+	}
+	if t == p5&t {
 		returned = append(returned, "P5")
 	}
 	return returned
