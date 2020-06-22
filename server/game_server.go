@@ -19,7 +19,7 @@ const (
 
 type playerGameData struct { //TODO LOAD GAME DATA
 	p                  *clientPlayer
-	position           posVector
+	position           *posVector
 	latestDirection    direction
 	tileRepresentation tile
 }
@@ -216,19 +216,19 @@ func (g *game) updatePlayerPositions() {
 		for y := 0; y < len(g.maze[x]); y++ {
 			switch g.maze[x][y] {
 			case p1:
-				g.p1.position = posVector{x: x, y: y}
+				g.p1.position = &posVector{x: x, y: y}
 				break
 			case p2:
-				g.p2.position = posVector{x: x, y: y}
+				g.p2.position = &posVector{x: x, y: y}
 				break
 			case p3:
-				g.p3.position = posVector{x: x, y: y}
+				g.p3.position = &posVector{x: x, y: y}
 				break
 			case p4:
-				g.p4.position = posVector{x: x, y: y}
+				g.p4.position = &posVector{x: x, y: y}
 				break
 			case p5:
-				g.p5.position = posVector{x: x, y: y}
+				g.p5.position = &posVector{x: x, y: y}
 				break
 			}
 		}
