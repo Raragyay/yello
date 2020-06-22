@@ -86,7 +86,13 @@ input, button, select, textarea, form, table {
 
 #legend{
     position: absolute;
-    font-size: medium;
+    font-size: 13px;
+    display: grid;
+    grid-column-gap: 10px;
+    grid-row-gap: 5px;
+    grid-template-columns: auto auto;
+    align-content: center;
+    margin: 30px;
 }
 
 #queue {
