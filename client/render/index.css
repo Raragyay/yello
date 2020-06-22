@@ -78,9 +78,7 @@ input, button, select, textarea, form, table {
 }
 
 .labels {
-    position: absolute;
-    margin: 0 auto;
-    bottom: 50px;
+    display: inline-block;
 }
 
 
@@ -101,7 +99,7 @@ input, button, select, textarea, form, table {
 
 
 
-img.p-icon{
+.p-icon{
     width: 30px !important;
     height: 30px !important;
 }
