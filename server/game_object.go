@@ -257,14 +257,16 @@ func (t tile) isPacGhostCollide() bool {
 
 func tileToBit(sMaze string) tile {
 	switch sMaze {
+	case "000":
+		return empty
 	case "002":
-		return (pellet)
+		return pellet
 	case "003":
-		return (superPellet)
+		return superPellet
 	case "004":
 		return p1
 	case "010":
-		return (p2)
+		return p2
 	case "011":
 		return p3
 	case "012":
@@ -272,6 +274,6 @@ func tileToBit(sMaze string) tile {
 	case "013":
 		return p5
 	default:
-		return (wall)
+		return wall
 	}
 }
