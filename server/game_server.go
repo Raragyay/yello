@@ -21,7 +21,7 @@ const (
 type playerGameData struct { //TODO LOAD GAME DATA
 	p                  *clientPlayer
 	position           *posVector
-	latestDirection    direction
+	currentDirection   direction
 	desiredDirection   direction
 	tileRepresentation tile
 	startingPosition   *posVector
@@ -104,37 +104,51 @@ func tendGame(g *game) {
 		//move players
 		for idx, player := range []*playerGameData{
 			g.p1, g.p2} { //TODO add more players to iterate over
-			projX, projY := player.position.x, player.position.y
-			if player.desiredDirection == "R" {
-				projX += 1
-			}
-			if player.desiredDirection == "L" {
-				projX -= 1
-			}
-			if player.desiredDirection == "U" {
-				projY -= 1
-			}
-			if player.desiredDirection == "D" {
-				projY += 1
-			}
-			if projX < 0 || projX >= len((*g).maze[0]) || projY < 0 || projY >= len(g.maze) {
-				stopPlayer(player)
-			} else if (*g).maze[projY][projX] == wall {
-				stopPlayer(player)
-			} else {
+			projX, projY := getProjected(player, player.desiredDirection)
+			if canMoveInDirection(g, projX, projY) {
 				moveToTile(g, player, projX, projY)
-				updateObjectPosition(g, "P"+strconv.Itoa(idx+1), player.position)
+				player.currentDirection = player.desiredDirection
+			} else {
+				projX, projY = getProjected(player, player.currentDirection)
+				if canMoveInDirection(g, projX, projY) {
+					moveToTile(g, player, projX, projY)
+				} else {
+					stopPlayer(player)
+				}
 			}
+			updateObjectPosition(g, "P"+strconv.Itoa(idx+1), player.position)
 		}
-		//check collision with wall
+		if (*g).maze[g.p1.position.y][g.p1.position.x].isPacHom() {
+			sendPelletConsumed(g, g.p1.position)
+		}
 		//check teleport
-		//eat pellet
-		//check collision
+		//check collision with ghost
 		////check super State
 
 		//ze game loop!
 		time.Sleep(100 * time.Millisecond)
 	}
+}
+
+func getProjected(player *playerGameData, direction direction) (int, int) {
+	projX, projY := player.position.x, player.position.y
+	if direction == right {
+		projX += 1
+	}
+	if direction == left {
+		projX -= 1
+	}
+	if direction == up {
+		projY -= 1
+	}
+	if direction == down {
+		projY += 1
+	}
+	return projX, projY
+}
+
+func canMoveInDirection(g *game, projX int, projY int) bool {
+	return !(projX < 0 || projX >= len((*g).maze[0]) || projY < 0 || projY >= len(g.maze) || (*g).maze[projY][projX] == wall)
 }
 
 func moveToTile(g *game, player *playerGameData, x int, y int) {
