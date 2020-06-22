@@ -11,7 +11,7 @@ import (
 
 const (
 	queueMessageSendCooldown time.Duration = time.Second * 2
-	playersInEachGame        int           = 2
+	playersInEachGame        int           = 4
 )
 
 var queuedPlayersChannel = make(chan *clientPlayer, 5) //channel to handle players joining queue
@@ -59,7 +59,7 @@ func handleQueuedPlayer(newPlayer *clientPlayer) {
 	}
 	if len(queuedPlayers) >= playersInEachGame {
 
-		go initializeGameServer(queuedPlayers[0], queuedPlayers[1]) //add others later
+		go initializeGameServer(queuedPlayers[0], queuedPlayers[1], queuedPlayers[2], queuedPlayers[3]) //add others later
 		for i := 0; i < playersInEachGame; i++ {
 			queuedPlayers[i].queued = false
 		}

@@ -35,13 +35,13 @@ type game struct {
 	pelletsLeft        int
 }
 
-func initializeGameServer(p1, p2 *clientPlayer) {
+func initializeGameServer(p1, p2, p3, p4 *clientPlayer) {
 
 	gameInstance := &game{
 		p1: &playerGameData{p: p1},
 		p2: &playerGameData{p: p2},
-		//p3:     &playerGameData{p: p3},
-		//p4:     &playerGameData{p: p4},
+		p3: &playerGameData{p: p3},
+		p4: &playerGameData{p: p4},
 		//p5:     &playerGameData{p: p5},
 		active:      true,
 		pelletsLeft: 0,
