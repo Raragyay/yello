@@ -163,23 +163,23 @@ function updateCommand(newCmd) {
     command = newCmd;
     switch (newCmd) {
         case 'up':
-            pacman.xspeed = 0;
-            pacman.yspeed = -1;
+            // pacman.xspeed = 0;
+            // pacman.yspeed = -1;
             sendSocketMessage("PONG UPDATE-DIR U")
             break;
         case 'down':
-            pacman.xspeed = 0;
-            pacman.yspeed = 1;
+            // pacman.xspeed = 0;
+            // pacman.yspeed = 1;
             sendSocketMessage("PONG UPDATE-DIR D")
             break;
         case 'left':
-            pacman.xspeed = -1;
-            pacman.yspeed = 0;
+            // pacman.xspeed = -1;
+            // pacman.yspeed = 0;
             sendSocketMessage("PONG UPDATE-DIR L")
             break;
         case 'right':
-            pacman.xspeed = 1;
-            pacman.yspeed = 0;
+            // pacman.xspeed = 1;
+            // pacman.yspeed = 0;
             sendSocketMessage("PONG UPDATE-DIR R")
             break;
         default:
