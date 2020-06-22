@@ -79,6 +79,8 @@ input, button, select, textarea, form, table {
 
 .labels {
     display: inline-block;
+    position: absolute;
+    display: none;
 }
 
 
@@ -92,7 +94,6 @@ input, button, select, textarea, form, table {
     grid-row-gap: 5px;
     grid-template-columns: auto auto;
     align-content: baseline;
-    
     margin: 30px;
 }
 
@@ -103,7 +104,10 @@ input, button, select, textarea, form, table {
 }
 
 
-
+#directions {
+    float: right;
+    position: relative;
+}
 
 
 .p-icon{
