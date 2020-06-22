@@ -96,11 +96,7 @@ input, button, select, textarea, form, table {
     margin: 30px;
 }
 
-#queue{
-    top: 30vh;
-}
-
-#queueNum {
+#queue {
     position: relative;
     margin: 10px;
     display: inline-block;
