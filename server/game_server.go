@@ -148,9 +148,10 @@ func getNumberOfPellets(g *game) int {
 }
 
 func constructBitMaze(sMaze [][]string) [][]tile {
-	for (int row = 0; row < sMaze.length; row++) {
-		for (int col = 0; col < sMaze[row].length; col++) {
-			tileMaze[row][col] := (tileToBit(sMaze[row][col]))
+	tileMaze := make([][]tile)
+	for (int row = 0; row < len(sMaze); row++) {
+		for (int col = 0; col < len(sMaze[row]); col++) {
+			tileMaze[row][col] = (tileToBit(sMaze[row][col]))
 		}
 	}
 	return(tileMaze)
