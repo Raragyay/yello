@@ -25,11 +25,11 @@ type playerGameData struct { //TODO LOAD GAME DATA
 }
 
 type game struct {
-	p1, p2      *playerGameData
-	active      bool
-	maze        [][]tile
-	pacLives    int
-	pelletsLeft int
+	p1, p2, p3, p4, p5 *playerGameData
+	active             bool
+	maze               [][]tile
+	pacLives           int
+	pelletsLeft        int
 }
 
 func initializeGameServer(p1, p2 *clientPlayer) {
@@ -63,6 +63,10 @@ func initializeGameServer(p1, p2 *clientPlayer) {
 	gameInstance.maze = constructBitMaze(maze)
 
 	gameInstance.pacLives = startingPacLives
+
+	//more initialization
+	gameInstance.updatePlayerPositions()
+	gameInstance.updateTileReferences()
 
 	//handle game initialization
 	p1.writeChanneledMessage("PONG GAME-INIT " + "P1-" + p2.name) //Who needs JSON when you got -?
@@ -227,4 +231,36 @@ func pickPlayerGameData(g *game, p *clientPlayer) *playerGameData {
 		return g.p2
 	}
 	return nil
+}
+
+func (g *game) updatePlayerPositions() {
+	for x := 0; x < len(g.maze); x++ {
+		for y := 0; y < len(g.maze[x]); y++ {
+			switch g.maze[x][y] {
+			case p1:
+				g.p1.position = posVector{x: x, y: y}
+				break
+			case p2:
+				g.p2.position = posVector{x: x, y: y}
+				break
+			case p3:
+				g.p3.position = posVector{x: x, y: y}
+				break
+			case p4:
+				g.p4.position = posVector{x: x, y: y}
+				break
+			case p5:
+				g.p5.position = posVector{x: x, y: y}
+				break
+			}
+		}
+	}
+}
+
+func (g *game) updateTileReferences() {
+	g.p1.tileRepresentation = p1
+	g.p2.tileRepresentation = p2
+	g.p3.tileRepresentation = p3
+	g.p4.tileRepresentation = p4
+	g.p5.tileRepresentation = p5
 }

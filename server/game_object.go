@@ -211,7 +211,7 @@ func loadAndParseMazeFile(mazeFileName string) ([][]string, int) {
 //UTILS
 
 func (t tile) isIllegalCollision() bool {
-	return (!(uint8(t) > uint8(wall)))
+	return (uint8(t) > uint8(wall))
 }
 
 func (t tile) getPlayerID() []string {
