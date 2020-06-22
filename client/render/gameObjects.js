@@ -1,4 +1,3 @@
-
 class Pellet {
     constructor(x_, y_) {
         this.x = x_
@@ -41,7 +40,7 @@ class Entity {
             }
         };
         this.show = function () {
-            image(sprite, this.xblock * block_size, this.yblock * block_size, block_size, block_size);
+            image(this.spriteIMG(), this.xblock * block_size, this.yblock * block_size, block_size, block_size);
 
             //fill('#f0d465');
             //rect(this.xblock * block_size, this.yblock * block_size, block_size, block_size);
@@ -54,6 +53,10 @@ class Entity {
         this.xblock = x
         this.yblock = y
     }
+
+    spriteIMG() {
+        return this.sprite
+    }
 }
 
 class Pacman extends Entity {
@@ -65,5 +68,13 @@ class Pacman extends Entity {
 class Ghost extends Entity {
     constructor(sprite) {
         super(sprite);
+    }
+
+    spriteIMG() {
+        if (isScared) {
+            return scared_image
+        } else {
+            return this.sprite
+        }
     }
 }

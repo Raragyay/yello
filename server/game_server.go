@@ -35,13 +35,13 @@ type game struct {
 	pelletsLeft        int
 }
 
-func initializeGameServer(p1, p2 *clientPlayer) {
+func initializeGameServer(p1, p2, p3, p4 *clientPlayer) {
 
 	gameInstance := &game{
 		p1: &playerGameData{p: p1},
 		p2: &playerGameData{p: p2},
-		//p3:     &playerGameData{p: p3},
-		//p4:     &playerGameData{p: p4},
+		p3: &playerGameData{p: p3},
+		p4: &playerGameData{p: p4},
 		//p5:     &playerGameData{p: p5},
 		active:      true,
 		pelletsLeft: 0,
@@ -76,8 +76,10 @@ func initializeGameServer(p1, p2 *clientPlayer) {
 	gameInstance.setPlayerStartingPositionsToCurrent()
 
 	//handle game initialization
-	p1.writeChanneledMessage("PONG GAME-INIT " + "P1-" + p2.name) //Who needs JSON when you got -?
-	p2.writeChanneledMessage("PONG GAME-INIT " + "P2-" + p1.name)
+	p1.writeChanneledMessage("PONG GAME-INIT " + "P1-" + p1.name + "-" + p2.name + "-" + p3.name + "-" + p4.name) //Who need
+	p2.writeChanneledMessage("PONG GAME-INIT " + "P2-" + p1.name + "-" + p2.name + "-" + p3.name + "-" + p4.name) //Who needs JSON
+	p3.writeChanneledMessage("PONG GAME-INIT " + "P3-" + p1.name + "-" + p2.name + "-" + p3.name + "-" + p4.name) //Who needs JSON
+	p4.writeChanneledMessage("PONG GAME-INIT " + "P4-" + p1.name + "-" + p2.name + "-" + p3.name + "-" + p4.name) //Who needs JSON
 
 	//p1.writeChanneledMessage("PONG GAME-INIT " + "P1-" + p2.name + "-" + p3.name + "-" + p4.name + "-" + p5.name) //Who needs JSON when you got -?
 	//p2.writeChanneledMessage("PONG GAME-INIT " + "P2-" + p1.name + "-" + p3.name + "-" + p4.name + "-" + p5.name)
@@ -89,8 +91,8 @@ func initializeGameServer(p1, p2 *clientPlayer) {
 
 	p1.activeGame = gameInstance
 	p2.activeGame = gameInstance
-	//p3.activeGame = &gameInstance
-	//p4.activeGame = &gameInstance
+	p3.activeGame = gameInstance
+	p4.activeGame = gameInstance
 	//p5.activeGame = &gameInstance
 
 	tendGame(gameInstance)
@@ -103,7 +105,7 @@ func tendGame(g *game) {
 	for g.active {
 		//move players
 		for idx, player := range []*playerGameData{
-			g.p1, g.p2} { //TODO add more players to iterate over
+			g.p1, g.p2, g.p3, g.p4} { //TODO add more players to iterate over
 			projX, projY := getProjected(player, player.desiredDirection)
 			if canMoveInDirection(g, projX, projY) {
 				moveToTile(g, player, projX, projY)
@@ -142,10 +144,6 @@ func tendGame(g *game) {
 				sendCeaseScared(g)
 			}
 		}
-		// calculate ghost dead timer
-		//check teleport
-		//check collision with ghost
-		////check super State
 
 		//ze game loop!
 		time.Sleep(100 * time.Millisecond)
@@ -170,6 +168,8 @@ func killGhosts(g *game, entityList []*playerGameData) {
 func resetPlayerPositions(g *game) {
 	moveToTile(g, g.p1, g.p1.startingPosition.x, g.p1.startingPosition.y)
 	moveToTile(g, g.p2, g.p2.startingPosition.x, g.p2.startingPosition.y)
+	moveToTile(g, g.p3, g.p3.startingPosition.x, g.p3.startingPosition.y)
+	moveToTile(g, g.p4, g.p4.startingPosition.x, g.p4.startingPosition.y)
 }
 
 func getProjected(player *playerGameData, direction direction) (int, int) {
@@ -265,11 +265,15 @@ func moveEntity() {
 func writeToAllPlayers(g *game, msg string) {
 	g.p1.p.writeChanneledMessage(msg)
 	g.p2.p.writeChanneledMessage(msg)
+	g.p3.p.writeChanneledMessage(msg)
+	g.p4.p.writeChanneledMessage(msg)
 }
 
 func disconnectAllPlayers(g *game) {
 	g.p1.p.disconnectChannel <- struct{}{}
 	g.p2.p.disconnectChannel <- struct{}{}
+	g.p3.p.disconnectChannel <- struct{}{}
+	g.p4.p.disconnectChannel <- struct{}{}
 }
 
 func getNumberOfPellets(g *game) int {
@@ -293,6 +297,10 @@ func pickPlayerGameData(g *game, p *clientPlayer) *playerGameData {
 		return g.p1
 	case g.p2.p:
 		return g.p2
+	case g.p3.p:
+		return g.p3
+	case g.p4.p:
+		return g.p4
 	}
 	return nil
 }
@@ -307,12 +315,12 @@ func (g *game) updatePlayerPositions() {
 			case p2:
 				g.p2.position = &posVector{x: x, y: y}
 				break
-				//case p3:
-				//	g.p3.position = &posVector{x: x, y: y}
-				//	break
-				//case p4:
-				//	g.p4.position = &posVector{x: x, y: y}
-				//	break
+			case p3:
+				g.p3.position = &posVector{x: x, y: y}
+				break
+			case p4:
+				g.p4.position = &posVector{x: x, y: y}
+				break
 				//case p5:
 				//	g.p5.position = &posVector{x: x, y: y}
 				//	break
@@ -324,15 +332,14 @@ func (g *game) updatePlayerPositions() {
 func (g *game) setPlayerStartingPositionsToCurrent() {
 	g.p1.startingPosition = &posVector{}
 	g.p2.startingPosition = &posVector{}
-	// g.p3.startingPosition = &posVector{}
-	// g.p4.startingPosition = &posVector{}
+	g.p3.startingPosition = &posVector{}
+	g.p4.startingPosition = &posVector{}
 	// g.p5.startingPosition = &posVector{}
-	fmt.Println((*g.p1.position).toString())
 
 	*g.p1.startingPosition = *g.p1.position
 	*g.p2.startingPosition = *g.p2.position
-	//*g.p3.startingPosition = *g.p3.position
-	//*g.p4.startingPosition = *g.p4.position
+	*g.p3.startingPosition = *g.p3.position
+	*g.p4.startingPosition = *g.p4.position
 	//*g.p5.startingPosition = *g.p5.position
 }
 
@@ -350,8 +357,8 @@ func (g *game) updatePelletCounts() {
 func (g *game) updateTileReferences() {
 	g.p1.tileRepresentation = p1
 	g.p2.tileRepresentation = p2
-	//g.p3.tileRepresentation = p3
-	//g.p4.tileRepresentation = p4
+	g.p3.tileRepresentation = p3
+	g.p4.tileRepresentation = p4
 	//g.p5.tileRepresentation = p5
 }
 

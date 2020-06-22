@@ -96,8 +96,10 @@ socket.onmessage = (msg) => {
         document.getElementById("mainui-play").style.display = 'none'
         gameActive = true
         names = data.split(' ')[2].split('-')
-        for (var i = 0; i < names.length; i++) {
-            document.getElementById("player" + toString(i) + "name").innerText = names[i]
+        print(names)
+        for (var i = 1; i < names.length; i++) {
+            print("player" + toString(i) + "name")
+            document.getElementById("player" + i.toString() + "name").innerText = names[i]
         }
     } else if (data.startsWith("PONG SET-LEVEL")) {
         load_level(data.split(' ')[2])

@@ -65,6 +65,7 @@ function preload() {
     inky_image = loadImage('images/inky.png')
     pinky_image = loadImage('images/pinky.png')
     clyde_image = loadImage('images/clyde.png')
+    scared_image = loadImage('images/scared.png')
 
     pacman = new Pacman(pacman_image);
     blinky = new Ghost(blinky_image);
