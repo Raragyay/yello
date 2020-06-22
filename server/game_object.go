@@ -214,20 +214,21 @@ func (t tile) isIllegalCollision() bool {
 	return (!(uint8(t) > uint8(wall)))
 }
 
-func (t tile) getPlayerID() string {
+func (t tile) getPlayerID() []string {
+	returned := make([]string, 0)
 	switch t {
-	case p1:
-		return "P1"
-	case p2:
-		return "P2"
-	case p3:
-		return "P3"
-	case p4:
-		return "P4"
-	case p5:
-		return "P5"
+	case p1 & t:
+		returned = append(returned, "P1")
+	case p2 & t:
+		returned = append(returned, "P2")
+	case p3 & t:
+		returned = append(returned, "P3")
+	case p4 & t:
+		returned = append(returned, "P4")
+	case p5 & t:
+		returned = append(returned, "P5")
 	}
-	return ""
+	return returned
 }
 
 func playerIDToTile(id string) tile {

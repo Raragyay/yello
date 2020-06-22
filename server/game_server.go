@@ -150,14 +150,19 @@ func sendCeaseScared(g *game) {
 //FROM ZE CLIENT
 
 func playerUpdateDesiredDirection(req *playerRequest, argument string) {
+	p := pickPlayerGameData(req.p.activeGame, req.p)
 	switch argument {
 	case "R":
+		p.latestDirection = right
 		break
 	case "L":
+		p.latestDirection = left
 		break
 	case "U":
+		p.latestDirection = up
 		break
 	case "D":
+		p.latestDirection = down
 		break
 	}
 }
@@ -192,4 +197,14 @@ func constructBitMaze(sMaze [][]string) [][]tile {
 		}
 	}
 	return (tileMaze)
+}
+
+func pickPlayerGameData(g *game, p *clientPlayer) *playerGameData {
+	switch p {
+	case g.p1.p:
+		return g.p1
+	case g.p2.p:
+		return g.p2
+	}
+	return nil
 }
