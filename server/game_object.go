@@ -57,84 +57,6 @@ func loadMaze(file string) ([]string, error) {
 	return maze, nil
 }
 
-// func readInput() (string, error) { //make so that
-// 	buffer := make([]byte, 100)
-
-// 	cnt, err := //WHATEVER THE SERVER SENDS (UP DOWN LEFT RIGHT)
-// 	if err != nil {
-// 		return "", err
-// 	}
-
-// 	if cnt == 1 && buffer[0] == 0x1b {
-// 		return "ESC", nil
-// 	} else if cnt >= 3 {
-// 		if buffer[0] == 0x1b && buffer[1] == '[' {
-// 			switch buffer[2] {
-// 			case 'A':
-// 				return "UP", nil
-// 			case 'B':
-// 				return "DOWN", nil
-// 			case 'C':
-// 				return "RIGHT", nil
-// 			case 'D':
-// 				return "LEFT", nil
-// 			}
-// 		}
-// 	}
-// 	return "", nil
-// }
-//
-//func makeMove(oldRow, oldCol int, dir string) (newRow, newCol int) {
-//	newRow, newCol = oldRow, oldCol
-//
-//	switch dir {
-//	case "UP":
-//		newRow = newRow - 1
-//		if newRow < 0 {
-//			newRow = len(maze) - 1
-//		}
-//	case "DOWN":
-//		newRow = newRow + 1
-//		if newRow == len(maze)-1 {
-//			newRow = 0
-//		}
-//	case "RIGHT":
-//		newCol = newCol + 1
-//		if newCol == len(maze[0]) {
-//			newCol = 0
-//		}
-//	case "LEFT":
-//		newCol = newCol - 1
-//		if newCol < 0 {
-//			newCol = len(maze[0]) - 1
-//		}
-//	}
-//
-//	if maze[newRow][newCol] == wall {
-//		newRow = oldRow
-//		newCol = oldCol
-//	}
-//	return
-//}
-//
-//func movePlayer(playerindex string, dir string) {
-//	player.row, player.col = makeMove(players[playerindex].player.row, players[playerindex].player.col, dir)
-//	if players[playerindex].player.ghost == false {
-//		removeDot := func(row, col int) {
-//			maze[row] = maze[row][0:col] + " " + maze[row][col+1:]
-//		}
-//
-//		switch maze[player.row][player.col] {
-//		case '.':
-//			numDots--
-//			score++
-//			removeDot(player.row, player.col)
-//		}
-//	} else {
-//
-//	}
-//
-//}
 func drawDirection() string {
 	dir := rand.Intn(4)
 	move := map[int]string{
@@ -144,50 +66,6 @@ func drawDirection() string {
 		3: "LEFT",
 	}
 	return move[dir]
-}
-
-func yes() {
-	//flag.Parse()
-	//
-	//// initialize game
-	//initialise()
-	//defer cleanup()
-
-	// load resources
-	// maze := loadAndParseMazeFile(*mazeFile)
-	// println(len(maze))
-	//// process input (async)
-	//input := make(chan string)
-	//go func(ch chan<- string) {
-	//	for {
-	//		input, err := readInput()
-	//		if err != nil {
-	//			log.Print("error reading input:", err)
-	//			ch <- "ESC"
-	//		}
-	//		ch <- input
-	//	}
-	//}(input)
-	//
-	//// game loop
-	//for {
-	//	// process movement
-	//	select {
-	//	case inp := <-input:
-	//		if inp == "ESC" {
-	//			lives = 0
-	//		}
-	//		movePlayer(inp)
-	//		moveGhosts(inp)
-	//		// check game over
-	//		if numDots == 0 || lives <= 0 {
-	//			if lives == 0 {
-	//				fmt.Print("GAME OVER")
-	//			}
-	//			break
-	//		}
-	//	}
-	//}
 }
 
 func loadAndParseMazeFile(mazeFileName string) ([][]string, int) {
@@ -257,14 +135,16 @@ func (t tile) isPacGhostCollide() bool {
 
 func tileToBit(sMaze string) tile {
 	switch sMaze {
+	case "000":
+		return empty
 	case "002":
-		return (pellet)
+		return pellet
 	case "003":
-		return (superPellet)
+		return superPellet
 	case "004":
 		return p1
 	case "010":
-		return (p2)
+		return p2
 	case "011":
 		return p3
 	case "012":
@@ -272,6 +152,6 @@ func tileToBit(sMaze string) tile {
 	case "013":
 		return p5
 	default:
-		return (wall)
+		return wall
 	}
 }
