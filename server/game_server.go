@@ -119,22 +119,24 @@ func tendGame(g *game) {
 			updateObjectPosition(g, "P"+strconv.Itoa(idx+1), player.position)
 		}
 		if (*g).maze[g.p1.position.y][g.p1.position.x].isPacHom() {
-			sendPelletConsumed(g, g.p1.position)
 			if (*g).maze[g.p1.position.y][g.p1.position.x]&superPellet != 0 {
 				sendScared(g)
-				scaredCountdown = 5
+				scaredCountdown = 50
 			}
+			consumePellet(g, g.p1.position)
+			sendPelletConsumed(g, g.p1.position)
 		}
 		if (*g).maze[g.p1.position.y][g.p1.position.x].isPacGhostCollide() {
 			fmt.Println("Ghost collide")
 			if scaredCountdown != 0 {
-				killGhosts((*g).maze[g.p1.position.y][g.p1.position.x].getPlayerIDs())
+				fmt.Println("Kill ghosts")
+				killGhosts(g, getPlayersOnTile(g, (*g).maze[g.p1.position.y][g.p1.position.x]))
 			} else {
+				fmt.Println("player died")
 				resetPlayerPositions(g)
 			}
-			//if super state
 		}
-		if scaredCountdown > 1 {
+		if scaredCountdown >= 1 {
 			scaredCountdown--
 			if scaredCountdown == 0 {
 				sendCeaseScared(g)
@@ -150,13 +152,24 @@ func tendGame(g *game) {
 	}
 }
 
-func killGhosts(entityList []string) {
+func consumePellet(g *game, v *posVector) {
+	notMask := ^pellet &^ superPellet
+	(*g).maze[v.y][v.x] &= notMask
+}
 
+func killGhosts(g *game, entityList []*playerGameData) {
+	fmt.Println(entityList)
+	for _, entity := range entityList {
+		fmt.Printf("Entity at %s is killed", entity.position.toString())
+		if entity.tileRepresentation != p1 {
+			moveToTile(g, entity, entity.startingPosition.x, entity.startingPosition.y)
+		}
+	}
 }
 
 func resetPlayerPositions(g *game) {
-	g.p1.position = g.p1.startingPosition
-	g.p2.position = g.p2.startingPosition
+	moveToTile(g, g.p1, g.p1.startingPosition.x, g.p1.startingPosition.y)
+	moveToTile(g, g.p2, g.p2.startingPosition.x, g.p2.startingPosition.y)
 }
 
 func getProjected(player *playerGameData, direction direction) (int, int) {
@@ -268,10 +281,10 @@ func constructBitMaze(sMaze [][]string) [][]tile {
 	for row := 0; row < len(sMaze); row++ {
 		tileMaze[row] = make([]tile, len(sMaze[row]))
 		for col := 0; col < len(sMaze[row]); col++ {
-			tileMaze[row][col] = (tileToBit(sMaze[row][col]))
+			tileMaze[row][col] = tileToBit(sMaze[row][col])
 		}
 	}
-	return (tileMaze)
+	return tileMaze
 }
 
 func pickPlayerGameData(g *game, p *clientPlayer) *playerGameData {
@@ -285,9 +298,9 @@ func pickPlayerGameData(g *game, p *clientPlayer) *playerGameData {
 }
 
 func (g *game) updatePlayerPositions() {
-	for x := 0; x < len(g.maze); x++ {
-		for y := 0; y < len(g.maze[x]); y++ {
-			switch g.maze[x][y] {
+	for y := 0; y < len(g.maze); y++ {
+		for x := 0; x < len(g.maze[y]); x++ {
+			switch g.maze[y][x] {
 			case p1:
 				g.p1.position = &posVector{x: x, y: y}
 				break
@@ -314,6 +327,7 @@ func (g *game) setPlayerStartingPositionsToCurrent() {
 	// g.p3.startingPosition = &posVector{}
 	// g.p4.startingPosition = &posVector{}
 	// g.p5.startingPosition = &posVector{}
+	fmt.Println((*g.p1.position).toString())
 
 	*g.p1.startingPosition = *g.p1.position
 	*g.p2.startingPosition = *g.p2.position
@@ -359,6 +373,7 @@ func (g *game) getPlayerByID(id string) *playerGameData {
 
 func getPlayersOnTile(g *game, t tile) []*playerGameData {
 	players := t.getPlayerIDs()
+	fmt.Println(players)
 	returned := make([]*playerGameData, 0)
 	for _, val := range players {
 		returned = append(returned, g.getPlayerByID(val))
