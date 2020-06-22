@@ -93,12 +93,12 @@ socket.onmessage = (msg) => {
         document.getElementById("queue").innerText = data.split(" ")[2]
         isQueueing = true
     } else if (data.startsWith("PONG GAME-INIT")) {
+        document.getElementById("mainui-play").style.display = 'none'
+        gameActive = true
         names = data.split(' ')[2].split('-')
         for (var i = 0; i < names.length; i++) {
             document.getElementById("player" + toString(i) + "name").innerText = names[i]
         }
-        document.getElementById("mainui-play").style.display = 'none'
-        gameActive = true
     } else if (data.startsWith("PONG SET-LEVEL")) {
         load_level(data.split(' ')[2])
     } else if (data.startsWith("PONG GAME-INVALID")) {
@@ -106,12 +106,15 @@ socket.onmessage = (msg) => {
     } else if (data.startsWith("PONG GAME-ENTITY-POS")) { //PONG GAME-ENTITY-POS p1-3-5
         updatePositionOfEntity(data);
     } else if (data.startsWith("PONG GAME-PELLET-HOM")) {
+
+        console.log("Server: " + msg.data);
         nullifyPellet(data);
     } else if (data.startsWith("PONG GAME-SCARED")) {
+
+        console.log("Server: " + msg.data);
         //TODO change to reflect actual variable name
         isScared = data.split(' ')[2] === '1'
     }
-    console.log("Server: " + msg.data);
 }
 
 document.getElementById("play").addEventListener("click", () => {
