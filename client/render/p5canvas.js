@@ -9,7 +9,8 @@ let command;
 let pacman, blinky, pinky, inky, clyde;
 let canvas;
 let gameActive = false;
-let sttUp = false;
+
+
 let isScared = false;
 
 var canvasDiv = document.getElementById('canvas-div')
@@ -243,7 +244,7 @@ function updateDicts(newLeft, newUp, newRight, newDown) {
     }
 }
 
-//setupstt();
+setupstt();
 
 //arrow key navigation
 document.onkeydown = checkKey;

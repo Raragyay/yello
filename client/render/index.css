@@ -84,18 +84,23 @@ input, button, select, textarea, form, table {
 
 
 
-#legend{
+.grid{
     position: absolute;
     font-size: 13px;
     display: grid;
     grid-column-gap: 10px;
     grid-row-gap: 5px;
     grid-template-columns: auto auto;
-    align-content: center;
+    align-content: baseline;
+    
     margin: 30px;
 }
 
-#queue {
+#queue{
+    top: 30vh;
+}
+
+#queueNum {
     position: relative;
     margin: 10px;
     display: inline-block;
