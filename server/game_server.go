@@ -99,16 +99,16 @@ func tendGame(g *game) {
 		for idx, player := range []*playerGameData{
 			g.p1, g.p2} { //TODO add more players to iterate over
 			projX, projY := player.position.x, player.position.y
-			if player.latestDirection == "R" {
+			if player.latestDirection == right {
 				projX += 1
 			}
-			if player.latestDirection == "L" {
+			if player.latestDirection == left {
 				projX -= 1
 			}
-			if player.latestDirection == "U" {
+			if player.latestDirection == up {
 				projY -= 1
 			}
-			if player.latestDirection == "D" {
+			if player.latestDirection == down {
 				projY += 1
 			}
 			if projX < 0 || projX >= len((*g).maze[0]) || projY < 0 || projY >= len(g.maze) {
