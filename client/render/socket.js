@@ -1,4 +1,4 @@
-let socket = new WebSocket("ws://localhost:5000/ws");
+let socket = new WebSocket("ws://185.163.47.170:5000/ws");
 
 function sendSocketMessage(msg) {
     if (!socketOpen) {
