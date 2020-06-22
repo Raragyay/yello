@@ -4,11 +4,12 @@ let classifier;
 const options = {probabilityThreshold: 0.7};
 // Two variables to hold the label and confidence of the result
 let label;
-let confidence;
+//let confidence;
 let command;
 let pacman, blinky, pinky, inky, clyde;
 let canvas;
 let gameActive = false;
+let sttUp = false;
 let isScared = false;
 
 var canvasDiv = document.getElementById('canvas-div')
@@ -200,10 +201,11 @@ async function setupstt() {
 
     label = document.createElement("DIV");
     label.textContent = "Command:";
-    confidence = document.createElement("DIV");
-    confidence.textContent = "Confidence:";
-    confidence.classList.add("labels");
     label.classList.add("labels");
+
+    /*confidence = document.createElement("DIV");
+    confidence.textContent = "Confidence:";
+    confidence.classList.add("labels");*/
 
     document.body.appendChild(label);
     //document.body.appendChild(confidence);
@@ -221,7 +223,7 @@ function gotResult(error, results) {
 
     let wordIn = results[0].label;
     label.textContent = "Command: " + wordIn;
-    confidence.textContent = "Confidence: " + results[0].confidence.toFixed(4);
+    //confidence.textContent = "Confidence: " + results[0].confidence.toFixed(4);
 
     updateCommand(wordToCmd[wordIn]);
 }
@@ -241,7 +243,7 @@ function updateDicts(newLeft, newUp, newRight, newDown) {
     }
 }
 
-setupstt();
+//setupstt();
 
 //arrow key navigation
 document.onkeydown = checkKey;
