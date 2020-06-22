@@ -1,3 +1,30 @@
+html {
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background: linear-gradient(180deg, #6310CD 14.58%, #74E8EF 100%);
+    font-family: 'Varela Round', sans-serif;
+    text-align: center;
+}
+
+body {
+    height:100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    z-index: -10;
+    color: white;
+}
+
+input, button, select, textarea, form, table {
+    font-family: inherit;
+}
+
+.p5Canvas {
+    margin: 10vh auto;
+}
+
+
 #mainui-play {
     background-color: white;
     border-radius: 10px;
@@ -57,34 +84,27 @@
 }
 
 
+
+
+#legend{
+    position: absolute;
+    font-size: medium;
+}
+
 #queue {
     position: relative;
     margin: 10px;
     display: inline-block;
 }
 
-html {
-    height: 100%;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background: linear-gradient(180deg, #6310CD 14.58%, #74E8EF 100%);
-    font-family: 'Varela Round', sans-serif;
-    text-align: center;
-}
 
-body {
-    z-index: -10;
-    color: white;
-}
 
-input, button, select, textarea, form, table {
-    font-family: inherit;
-}
 
-.p5Canvas {
-    margin: 10vh auto;
-}
 
+img.p-icon{
+    width: 30px !important;
+    height: 30px !important;
+}
 
 /*#canvas-div{
     top: 40%;
