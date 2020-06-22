@@ -24,6 +24,7 @@ type playerGameData struct { //TODO LOAD GAME DATA
 	latestDirection    direction
 	desiredDirection   direction
 	tileRepresentation tile
+	startingPosition   *posVector
 }
 
 type game struct {
@@ -71,6 +72,8 @@ func initializeGameServer(p1, p2 *clientPlayer) {
 	gameInstance.updatePlayerPositions()
 	gameInstance.updateTileReferences()
 	gameInstance.updatePelletCounts()
+
+	gameInstance.setPlayerStartingPositionsToCurrent()
 
 	//handle game initialization
 	p1.writeChanneledMessage("PONG GAME-INIT " + "P1-" + p2.name) //Who needs JSON when you got -?
@@ -260,6 +263,14 @@ func (g *game) updatePlayerPositions() {
 			}
 		}
 	}
+}
+
+func (g *game) setPlayerStartingPositionsToCurrent() {
+	g.p1.startingPosition = g.p1.position
+	g.p2.startingPosition = g.p2.position
+	//g.p3.startingPosition = g.p3.position
+	//g.p4.startingPosition = g.p4.position
+	//g.p5.startingPosition = g.p5.position
 }
 
 func (g *game) updatePelletCounts() {
