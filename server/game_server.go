@@ -9,6 +9,8 @@ import (
 type direction string
 
 const (
+	startingPacLives int = 3
+
 	left  direction = "L"
 	right direction = "R"
 	up    direction = "U"
@@ -46,6 +48,11 @@ func initializeGameServer(p1, p2 *clientPlayer) {
 			fmt.Fprintf(&mazeMsg, "-%s", string(el))
 		}
 	}
+
+	//now construct bit maze for us yes
+	gameInstance.maze = constructBitMaze(maze)
+
+	gameInstance.pacLives = startingPacLives
 
 	//handle game initialization
 	p1.writeChanneledMessage("PONG GAME-INIT " + "P1-" + p2.name) //Who needs JSON when you got -?
@@ -93,6 +100,14 @@ func sendPelletConsumed(g *game, v *posVector) {
 	writeToAllPlayers(g, "PONG GAME-PELLET-HOM "+v.toString()) //client should get rid of pellet AND increase score for pac-man (if it is keeping track for visual purposes)
 }
 
+func sendScared(g *game) {
+	writeToAllPlayers(g, "PONG GAME-SCARED 1")
+}
+
+func sendCeaseScared(g *game) {
+	writeToAllPlayers(g, "PONG GAME-SCARED 0")
+}
+
 //func updateObjectState(g *game, o *gameObject, state objectState) {
 //	writeToAllPlayers(g, "PONG GAME-OBJECT-STATE " + o.string_ID + "-" + string(objectState))
 //}
@@ -112,6 +127,10 @@ func playerUpdateDesiredDirection(req *playerRequest, argument string) {
 	}
 }
 
+//FUNCTIONALITY
+
+func moveEntity()
+
 //INNER UTILS
 
 func writeToAllPlayers(g *game, msg string) {
@@ -122,4 +141,17 @@ func writeToAllPlayers(g *game, msg string) {
 func disconnectAllPlayers(g *game) {
 	g.p1.p.disconnectChannel <- struct{}{}
 	g.p2.p.disconnectChannel <- struct{}{}
+}
+
+func getNumberOfPellets(g *game) int {
+	return 0
+}
+
+func constructBitMaze(sMaze [][]string) [][]tile {
+	for (int row = 0; row < sMaze.length; row++) {
+		for (int col = 0; col < sMaze[row].length; col++) {
+			tileMaze[row][col] := (tileToBit(sMaze[row][col]))
+		}
+	}
+	return(tileMaze)
 }

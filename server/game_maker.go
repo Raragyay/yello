@@ -10,6 +10,8 @@ type game struct {
 	p1, p2 *playerGameData
 	active bool
 	maze   [][]tile
+	pacLives int
+	pelletsLeft int
 }
 
 //game_maker queues players up and puts them under a certain game_manager. It queues them up and delegates them into different games depending on whether a game is
