@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type direction string
@@ -126,6 +127,7 @@ func tendGame(g *game) {
 		////check super State
 
 		//ze game loop!
+		time.Sleep(100 * time.Millisecond)
 	}
 }
 
