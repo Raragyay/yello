@@ -21,7 +21,8 @@ const (
 type playerGameData struct { //TODO LOAD GAME DATA
 	p                  *clientPlayer
 	position           *posVector
-	latestDirection    direction
+	currentDirection   direction
+	desiredDirection   direction
 	tileRepresentation tile
 }
 
@@ -41,7 +42,8 @@ func initializeGameServer(p1, p2 *clientPlayer) {
 		//p3:     &playerGameData{p: p3},
 		//p4:     &playerGameData{p: p4},
 		//p5:     &playerGameData{p: p5},
-		active: true,
+		active:      true,
+		pelletsLeft: 0,
 	}
 	//handle maze
 	maze, numRows := loadAndParseMazeFile(*mazeFile)
@@ -68,6 +70,7 @@ func initializeGameServer(p1, p2 *clientPlayer) {
 	//more initialization
 	gameInstance.updatePlayerPositions()
 	gameInstance.updateTileReferences()
+	gameInstance.updatePelletCounts()
 
 	//handle game initialization
 	p1.writeChanneledMessage("PONG GAME-INIT " + "P1-" + p2.name) //Who needs JSON when you got -?
@@ -155,7 +158,7 @@ func moveToTile(g *game, player *playerGameData, x int, y int) {
 }
 
 func stopPlayer(player *playerGameData) {
-	(*player).latestDirection = ""
+	(*player).desiredDirection = ""
 }
 
 //INNER PROCESSES
@@ -192,16 +195,16 @@ func playerUpdateDesiredDirection(req *playerRequest, argument string) {
 	p := pickPlayerGameData(req.p.activeGame, req.p)
 	switch argument {
 	case "R":
-		p.latestDirection = right
+		p.desiredDirection = right
 		break
 	case "L":
-		p.latestDirection = left
+		p.desiredDirection = left
 		break
 	case "U":
-		p.latestDirection = up
+		p.desiredDirection = up
 		break
 	case "D":
-		p.latestDirection = down
+		p.desiredDirection = down
 		break
 	}
 }
@@ -268,6 +271,17 @@ func (g *game) updatePlayerPositions() {
 				//case p5:
 				//	g.p5.position = &posVector{x: x, y: y}
 				//	break
+			}
+		}
+	}
+}
+
+func (g *game) updatePelletCounts() {
+	g.pelletsLeft = 0
+	for x := 0; x < len(g.maze); x++ {
+		for y := 0; y < len(g.maze[x]); y++ {
+			if g.maze[x][y] == pellet {
+				g.pelletsLeft++
 			}
 		}
 	}
