@@ -30,8 +30,9 @@ const (
 	p3          tile = 0b00010000
 	p4          tile = 0b00001000
 	p5          tile = 0b00000100
-	pellet      tile = 0b00000010
-	superPellet tile = 0b00000001
+	superPellet tile = 0b00000010
+	pellet 		 tile = 0b00000001
+	empty tile = 0b00000000
 )
 
 var (
@@ -207,12 +208,16 @@ func loadAndParseMazeFile(mazeFileName string) ([][]string, int) {
 	return parsedMaze, rows
 }
 
+
+
 //UTILS
-func isIllegalCollision(t tile) bool {
+
+func (rawMaze )
+func (t tile)isIllegalCollision bool {
 	return (!(uint8(t) > uint8(wall)))
 }
 
-func getPlayerID(t tile) string {
+func (t tile)getPlayerID string {
 	switch t {
 	case p1:
 		return "P1"
@@ -228,6 +233,45 @@ func getPlayerID(t tile) string {
 	return ""
 }
 
-func isPacHom(t tile) bool {
-	return pellet&p1 == t
+func playerIDToTile(id string) tile {
+	switch id {
+	case "P1":
+		return p1
+	case "P2":
+		return p2
+	case "P3":
+		return p3
+	case "P4":
+		return p4
+	case "P5":
+		return p5
+	}
+	return empty
+}
+
+func (t tile)isPacHom bool {
+	return pellet + p1 == t
+}
+
+func (t tile)isPacGhostCollide() bool{
+	return (uint8(t) >= uint8(p1 + p5)) && (uint8(t) < uint8(wall))
+}
+
+func (sMaze string)tileToBit tile{
+	s := sMaze
+	if s == "000"{
+		return(wall)
+	}else if s == "002"{
+		return(pellet)
+	}else if s == "003"{
+		return(superPellet)
+	}else if s == "010"{
+		return(p2)
+	}else if s == "011"{
+		return(p3)
+	}else if s == "012"{
+		return(p4)
+	}else if s == "013"{
+		return(p5)
+	}
 }

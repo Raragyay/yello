@@ -6,7 +6,7 @@ const options = {probabilityThreshold: 0.7};
 let label;
 let confidence;
 let command;
-let player1;
+let pacman;
 let canvas;
 let gameActive = false;
 let isScared = false;
@@ -58,7 +58,7 @@ let player_image, blinky_image, inky_image, pinky_image, clyde_image
 
 function preload() {
     loadTXT('./levels/level2.txt', load_level)
-    player_image = loadImage('images/pacman.png')
+    pacman_image = loadImage('images/pacman.png')
     blinky_image = loadImage('images/blinky.png')
     inky_image = loadImage('images/inky.png')
     pinky_image = loadImage('images/pinky.png')
@@ -87,7 +87,14 @@ function calc_block_size(cb = function () {
 
 
 async function setup() {
-    player1 = new Player(player_image)
+    pacman = new Pacman(pacman_image);
+    blinky = new Ghost(blinky_image);
+    inky = new Ghost(inky_image);
+    pinky = new Ghost(pinky_image);
+    clyde = new Ghost(clyde_image);
+    entities.push(pacman, blinky, inky, pinky, clyde);
+    console.log(entities);
+
     calc_block_size(() => {
         canvas = createCanvas(levelWidth, levelHeight);
         console.log("createdCanvas");
@@ -137,12 +144,12 @@ function draw() {
     // if (!gameActive) {
     //     return
     // }
-    if (level === undefined || player1 === undefined) {
+    if (level === undefined || pacman === undefined) {
         return
     }
     drawLevel();
-    player1.update();
-    player1.show();
+    pacman.update();
+    pacman.show();
 }
 
 class Pellet {
@@ -187,8 +194,10 @@ class Entity {
             }
         };
         this.show = function () {
-            fill('#f0d465');
-            rect(this.xblock * block_size, this.yblock * block_size, block_size, block_size);
+            image(sprite, this.xblock * block_size, this.yblock * block_size, block_size, block_size);
+
+            //fill('#f0d465');
+            //rect(this.xblock * block_size, this.yblock * block_size, block_size, block_size);
             //rect(this.xpx, this.ypx, block_size, block_size);
         };
         //return this;
@@ -200,7 +209,13 @@ class Entity {
     }
 }
 
-class Player extends Entity {
+class Pacman extends Entity {
+    constructor(sprite) {
+        super(sprite);
+    }
+}
+
+class Ghost extends Entity {
     constructor(sprite) {
         super(sprite);
     }
@@ -215,23 +230,23 @@ function updateCommand(newCmd) {
     command = newCmd;
     switch (newCmd) {
         case 'up':
-            player1.xspeed = 0;
-            player1.yspeed = -1;
+            pacman.xspeed = 0;
+            pacman.yspeed = -1;
             sendSocketMessage("PONG UPDATE-DIR U")
             break;
         case 'down':
-            player1.xspeed = 0;
-            player1.yspeed = 1;
+            pacman.xspeed = 0;
+            pacman.yspeed = 1;
             sendSocketMessage("PONG UPDATE-DIR D")
             break;
         case 'left':
-            player1.xspeed = -1;
-            player1.yspeed = 0;
+            pacman.xspeed = -1;
+            pacman.yspeed = 0;
             sendSocketMessage("PONG UPDATE-DIR L")
             break;
         case 'right':
-            player1.xspeed = 1;
-            player1.yspeed = 0;
+            pacman.xspeed = 1;
+            pacman.yspeed = 0;
             sendSocketMessage("PONG UPDATE-DIR R")
             break;
         default:
