@@ -340,3 +340,28 @@ func (g *game) updateTileReferences() {
 	//g.p4.tileRepresentation = p4
 	//g.p5.tileRepresentation = p5
 }
+
+func (g *game) getPlayerByID(id string) *playerGameData {
+	switch id {
+	case "P1":
+		return g.p1
+	case "P2":
+		return g.p2
+	case "P3":
+		return g.p3
+	case "P4":
+		return g.p4
+	case "P5":
+		return g.p5
+	}
+	return nil
+}
+
+func getPlayersOnTile(g *game, t tile) []*playerGameData {
+	players := t.getPlayerIDs()
+	returned := make([]*playerGameData, 0)
+	for _, val := range players {
+		returned = append(returned, g.getPlayerByID(val))
+	}
+	return returned
+}
