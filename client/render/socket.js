@@ -93,7 +93,10 @@ socket.onmessage = (msg) => {
         document.getElementById("queue").innerText = data.split(" ")[2]
         isQueueing = true
     } else if (data.startsWith("PONG GAME-INIT")) {
-        //TODO take names of other players
+        names = data.split(' ')[2].split('-')
+        for (var i = 0; i < names.length; i++) {
+            document.getElementById("player" + toString(i) + "name").innerText = names[i]
+        }
         document.getElementById("mainui-play").style.display = 'none'
         gameActive = true
     } else if (data.startsWith("PONG SET-LEVEL")) {
