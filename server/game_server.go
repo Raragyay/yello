@@ -95,7 +95,7 @@ func tendGame(g *game) {
 
 	for g.active {
 		//move players
-		for _, player := range []*playerGameData{
+		for idx, player := range []*playerGameData{
 			g.p1, g.p2} { //TODO add more players to iterate over
 			projX, projY := player.position.x, player.position.y
 			if player.latestDirection == "R" {
@@ -105,10 +105,18 @@ func tendGame(g *game) {
 				projX -= 1
 			}
 			if player.latestDirection == "U" {
-				projY += 1
+				projY -= 1
 			}
 			if player.latestDirection == "D" {
-				projY -= 1
+				projY += 1
+			}
+			if projX < 0 || projX >= len((*g).maze[0]) || projY < 0 || projY >= len(g.maze) {
+				stopPlayer(player)
+			} else if (*g).maze[projY][projX] == wall {
+				stopPlayer(player)
+			} else {
+				moveToTile(g, player, projX, projY)
+				updateObjectPosition(g, "P"+strconv.Itoa(idx+1), player.position)
 			}
 		}
 		//check collision with wall
@@ -119,6 +127,19 @@ func tendGame(g *game) {
 
 		//ze game loop!
 	}
+}
+
+func moveToTile(g *game, player *playerGameData, x int, y int) {
+	notMask := ^player.tileRepresentation
+	(*g).maze[player.position.y][player.position.x] &= notMask
+	player.position.x = x
+	player.position.y = y
+	(*g).maze[y][x] |= player.tileRepresentation
+
+}
+
+func stopPlayer(player *playerGameData) {
+	(*player).latestDirection = ""
 }
 
 //INNER PROCESSES
@@ -192,8 +213,9 @@ func getNumberOfPellets(g *game) int {
 }
 
 func constructBitMaze(sMaze [][]string) [][]tile {
-	tileMaze := make([][]tile, 2) //TODO BETTER LEN HANDLING
+	tileMaze := make([][]tile, len(sMaze)) //TODO BETTER LEN HANDLING
 	for row := 0; row < len(sMaze); row++ {
+		tileMaze[row] = make([]tile, len(sMaze[row]))
 		for col := 0; col < len(sMaze[row]); col++ {
 			tileMaze[row][col] = (tileToBit(sMaze[row][col]))
 		}
@@ -221,15 +243,15 @@ func (g *game) updatePlayerPositions() {
 			case p2:
 				g.p2.position = &posVector{x: x, y: y}
 				break
-			case p3:
-				g.p3.position = &posVector{x: x, y: y}
-				break
-			case p4:
-				g.p4.position = &posVector{x: x, y: y}
-				break
-			case p5:
-				g.p5.position = &posVector{x: x, y: y}
-				break
+				//case p3:
+				//	g.p3.position = &posVector{x: x, y: y}
+				//	break
+				//case p4:
+				//	g.p4.position = &posVector{x: x, y: y}
+				//	break
+				//case p5:
+				//	g.p5.position = &posVector{x: x, y: y}
+				//	break
 			}
 		}
 	}
@@ -238,7 +260,7 @@ func (g *game) updatePlayerPositions() {
 func (g *game) updateTileReferences() {
 	g.p1.tileRepresentation = p1
 	g.p2.tileRepresentation = p2
-	g.p3.tileRepresentation = p3
-	g.p4.tileRepresentation = p4
-	g.p5.tileRepresentation = p5
+	//g.p3.tileRepresentation = p3
+	//g.p4.tileRepresentation = p4
+	//g.p5.tileRepresentation = p5
 }
