@@ -33,6 +33,7 @@ type clientMessageHandle func(*playerRequest, string)
 //the player is in. Thus, each concurrent operation is handled such that it is either the sub-operation of an operation that it knows will ensure the existence
 //of the variables it wants to use or it is said operation itself.
 type clientPlayer struct {
+	queued               bool
 	conn                 *websocket.Conn
 	name                 string
 	messageType          int

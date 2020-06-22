@@ -129,7 +129,9 @@ func playerUpdateDesiredDirection(req *playerRequest, argument string) {
 
 //FUNCTIONALITY
 
-func moveEntity()
+func moveEntity() {
+
+}
 
 //INNER UTILS
 
@@ -148,11 +150,11 @@ func getNumberOfPellets(g *game) int {
 }
 
 func constructBitMaze(sMaze [][]string) [][]tile {
-	tileMaze := make([][]tile)
-	for (int row = 0; row < len(sMaze); row++) {
-		for (int col = 0; col < len(sMaze[row]); col++) {
+	tileMaze := make([][]tile, 2) //TODO BETTER LEN HANDLING
+	for row := 0; row < len(sMaze); row++ {
+		for col := 0; col < len(sMaze[row]); col++ {
 			tileMaze[row][col] = (tileToBit(sMaze[row][col]))
 		}
 	}
-	return(tileMaze)
+	return (tileMaze)
 }
