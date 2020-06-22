@@ -92,7 +92,7 @@ func (t tile) isIllegalCollision() bool {
 	return (uint8(t) > uint8(wall))
 }
 
-func (t tile) getPlayerID() []string {
+func (t tile) getPlayerIDs() []string {
 	returned := make([]string, 0)
 	switch t {
 	case p1 & t:

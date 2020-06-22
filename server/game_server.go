@@ -99,7 +99,7 @@ func initializeGameServer(p1, p2 *clientPlayer) {
 func tendGame(g *game) {
 
 	//WRITE CODE HERE
-
+	scaredCountdown := 0
 	for g.active {
 		//move players
 		for idx, player := range []*playerGameData{
@@ -120,7 +120,27 @@ func tendGame(g *game) {
 		}
 		if (*g).maze[g.p1.position.y][g.p1.position.x].isPacHom() {
 			sendPelletConsumed(g, g.p1.position)
+			if (*g).maze[g.p1.position.y][g.p1.position.x]&superPellet != 0 {
+				sendScared(g)
+				scaredCountdown = 5
+			}
 		}
+		if (*g).maze[g.p1.position.y][g.p1.position.x].isPacGhostCollide() {
+			fmt.Println("Ghost collide")
+			if scaredCountdown != 0 {
+				killGhosts((*g).maze[g.p1.position.y][g.p1.position.x].getPlayerIDs())
+			} else {
+				resetPlayerPositions(g)
+			}
+			//if super state
+		}
+		if scaredCountdown > 1 {
+			scaredCountdown--
+			if scaredCountdown == 0 {
+				sendCeaseScared(g)
+			}
+		}
+		// calculate ghost dead timer
 		//check teleport
 		//check collision with ghost
 		////check super State
@@ -128,6 +148,15 @@ func tendGame(g *game) {
 		//ze game loop!
 		time.Sleep(100 * time.Millisecond)
 	}
+}
+
+func killGhosts(entityList []string) {
+
+}
+
+func resetPlayerPositions(g *game) {
+	g.p1.position = g.p1.startingPosition
+	g.p2.position = g.p2.startingPosition
 }
 
 func getProjected(player *playerGameData, direction direction) (int, int) {
@@ -280,11 +309,17 @@ func (g *game) updatePlayerPositions() {
 }
 
 func (g *game) setPlayerStartingPositionsToCurrent() {
-	g.p1.startingPosition = g.p1.position
-	g.p2.startingPosition = g.p2.position
-	//g.p3.startingPosition = g.p3.position
-	//g.p4.startingPosition = g.p4.position
-	//g.p5.startingPosition = g.p5.position
+	g.p1.startingPosition = &posVector{}
+	g.p2.startingPosition = &posVector{}
+	// g.p3.startingPosition = &posVector{}
+	// g.p4.startingPosition = &posVector{}
+	// g.p5.startingPosition = &posVector{}
+
+	*g.p1.startingPosition = *g.p1.position
+	*g.p2.startingPosition = *g.p2.position
+	//*g.p3.startingPosition = *g.p3.position
+	//*g.p4.startingPosition = *g.p4.position
+	//*g.p5.startingPosition = *g.p5.position
 }
 
 func (g *game) updatePelletCounts() {
